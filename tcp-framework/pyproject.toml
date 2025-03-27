@@ -1,0 +1,9 @@
+[project]
+name = "tcp-framework"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "gitpython>=3.1.44",
+    "pandas>=2.2.3",
+    "sentence-transformers>=4.0.1",
+]
