@@ -1,21 +1,20 @@
 from typing import Sequence
 from sentence_transformers.util import cos_sim
-from ..datatypes import RunContext
-from ..vectorizers import CodeVectorizer
-from .tcp_approach import TcpApproach
+from ...datatypes import RunContext
+from ..tcp_approach import TcpApproach
+from .vectorizers import CodeVectorizer, CodeVector
 
 
-def _dst(e1: Sequence[float], e2: Sequence[float]) -> float:
+def _dst(e1: CodeVector, e2: CodeVector) -> float:
     return 1 - abs(cos_sim(e1, e2))
 
 
 class Proposed(TcpApproach):
     def __init__(self, vectorizer: CodeVectorizer) -> None:
         self._vectorizer = vectorizer
-        super().__init__()
 
     def prioritize(self, ctx: RunContext) -> None:
-        embeddings: dict[str, Sequence[float]] = {}
+        embeddings: dict[str, CodeVector] = {}
         for tc in ctx.test_cases:
             embeddings[tc.name] = self._vectorizer.vectorize(ctx.inspect_code(tc))
 

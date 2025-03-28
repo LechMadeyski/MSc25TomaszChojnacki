@@ -1,6 +1,7 @@
-from typing import Any, Generator
+from typing import Any, Generator, Optional
 import git
 import pandas as pd
+from .datatypes import TestInfo
 
 
 class TcpDataset:
@@ -26,7 +27,7 @@ class TcpDataset:
             index=rtc_df["tr_job_id"].astype("str"),
         ).to_dict()
 
-    def _read_content(self, name: str) -> str | None:
+    def _read_content(self, name: str) -> Optional[str]:
         try:
             with open(
                 f"{self._repo_path}/src/test/java/{name.replace('.', '/')}.java", "r"
@@ -35,7 +36,7 @@ class TcpDataset:
         except:
             return None
 
-    def runs(self) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
+    def runs(self) -> Generator[tuple[str, list[TestInfo]], None, None]:
         self._repo.git.checkout(".")
         for run_id, test_cases in self._run_dict.items():
             if run_id not in self._run_to_commit:
@@ -48,4 +49,15 @@ class TcpDataset:
             if any(tc["content"] is None for tc in test_cases):
                 continue
 
-            yield run_id, test_cases
+            yield (
+                run_id,
+                [
+                    TestInfo(
+                        name=tc["testName"],
+                        content=tc["content"],
+                        failures=tc["failures"],
+                        duration_s=tc["duration"],
+                    )
+                    for tc in test_cases
+                ],
+            )

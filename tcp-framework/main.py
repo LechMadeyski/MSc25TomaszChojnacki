@@ -1,5 +1,11 @@
-from tcp_framework import evaluate, TcpDataset, Proposed, BaseOrder, RandomOrder
-from tcp_framework.vectorizers import CodeXEmbed
+from tcp_framework import (
+    evaluate,
+    TcpDataset,
+    Proposed,
+    BaseOrder,
+    RandomOrder,
+    CodeXEmbed,
+)
 
 little_proxy = TcpDataset(
     runs_path="../experiments/new-approach/adamfisk@LittleProxy.csv",

@@ -1,16 +1,17 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from .code_vectorizer import CodeVectorizer
+from .code_vectorizer import CodeVectorizer, CodeVector
 
 
 class CodeXEmbed(CodeVectorizer):
-    def __init__(self):
-        self._cache: dict[int, np.ndarray] = {}
+    def __init__(self) -> None:
+        self._cache: dict[int, CodeVector] = {}
         self._model = SentenceTransformer(
-            "Salesforce/SFR-Embedding-Code-400M_R", trust_remote_code=True
-        )
+            "Salesforce/SFR-Embedding-Code-400M_R",
+            trust_remote_code=True,
+        )  # type: ignore
 
-    def vectorize(self, code: str) -> np.ndarray:
+    def vectorize(self, code: str) -> CodeVector:
         class_idx = code.find("class")
         if class_idx == -1:
             class_idx = 0

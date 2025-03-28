@@ -1,5 +1,6 @@
+from collections import Counter
 from .approaches import TcpApproach
-from .datatypes import RunContext, TestCase, TestResult
+from .datatypes import RunContext, TestCase, TestInfo, TestResult
 from .tcp_dataset import TcpDataset
 
 
@@ -16,42 +17,40 @@ def _metric_apfd(failures: list[int]) -> float:
 
 
 def evaluate(approaches: list[TcpApproach], dataset: TcpDataset) -> None:
-    apfds = [[] for _ in approaches]
+    apfds: list[list[float]] = [[] for _ in approaches]
 
-    for run_id, test_cases in dataset.runs():
-        if sum(tc["failures"] for tc in test_cases) == 0:
+    for run_id, test_infos in dataset.runs():
+        if sum(ti.failures for ti in test_infos) == 0:
             continue  # TODO
 
         def inspect_code(target: TestCase) -> str:
-            for tc in test_cases:
-                if tc["testName"] == target.name:
-                    return tc["content"]
+            for ti in test_infos:
+                if ti.name == target.name:
+                    return ti.content
             raise ValueError
 
         print(f"Run ID: {run_id}")
 
         for ai, approach in enumerate(approaches):
-            result = []
+            result: list[TestInfo] = []
 
             def execute(target: TestCase) -> TestResult:
-                for tc in test_cases:
-                    if tc["testName"] == target.name:
-                        if tc in result:
-                            raise ValueError
-                        result.append(tc)
-                        return TestResult(failures=tc["failures"], duration_s=tc["duration"])
+                for ti in test_infos:
+                    if ti.name == target.name:
+                        result.append(ti)
+                        return ti.to_result()
                 raise ValueError
 
             ctx = RunContext(
-                test_cases=[TestCase(name=tc["testName"]) for tc in test_cases],
+                test_cases=[ti.to_case() for ti in test_infos],
                 execute=execute,
                 inspect_code=inspect_code,
             )
             approach.prioritize(ctx)
-            if len(test_cases) != len(result):
+            if Counter(test_infos) != Counter(result):
                 raise ValueError
 
-            apfd = _metric_apfd([tc["failures"] for tc in result])
+            apfd = _metric_apfd([ti.failures for ti in result])
             apfds[ai].append(apfd)
 
         for ai, approach in enumerate(approaches):

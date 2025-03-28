@@ -1,4 +1,3 @@
-from .base_order import BaseOrder
-from .proposed import Proposed
-from .random_order import RandomOrder
+from .baseline import *
+from .representation import *
 from .tcp_approach import TcpApproach
