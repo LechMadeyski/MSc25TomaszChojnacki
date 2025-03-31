@@ -16,20 +16,23 @@ def _metric_apfd(failures: list[int]) -> float:
     return 1 - (s / (n * m)) + (1 / (2 * n))
 
 
-def evaluate(approaches: list[TcpApproach], dataset: TcpDataset) -> None:
+def evaluate(approaches: list[TcpApproach], dataset: TcpDataset, *, debug: bool = False) -> None:
     apfds: list[list[float]] = [[] for _ in approaches]
 
     for run_id, test_infos in dataset.runs():
-        if sum(ti.failures for ti in test_infos) == 0:
+        gather_metrics = sum(ti.failures for ti in test_infos) > 0
+
+        if not gather_metrics:
             continue  # TODO
+
+        if debug:
+            print(f"Run ID: {run_id}")
 
         def inspect_code(target: TestCase) -> str:
             for ti in test_infos:
                 if ti.name == target.name:
                     return ti.content
             raise ValueError
-
-        print(f"Run ID: {run_id}")
 
         for ai, approach in enumerate(approaches):
             result: list[TestInfo] = []
@@ -50,9 +53,10 @@ def evaluate(approaches: list[TcpApproach], dataset: TcpDataset) -> None:
             if Counter(test_infos) != Counter(result):
                 raise ValueError
 
-            apfd = _metric_apfd([ti.failures for ti in result])
-            apfds[ai].append(apfd)
+            if gather_metrics:
+                apfds[ai].append(_metric_apfd([ti.failures for ti in result]))
 
-        for ai, approach in enumerate(approaches):
-            print(f"APFD_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3}, ", end="")
-        print(flush=True)
+        if debug and gather_metrics:
+            for ai, approach in enumerate(approaches):
+                print(f"APFD_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3}, ", end="")
+            print(flush=True)

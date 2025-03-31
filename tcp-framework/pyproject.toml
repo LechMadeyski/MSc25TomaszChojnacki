@@ -6,6 +6,7 @@ dependencies = [
     "gitpython>=3.1.44",
     "pandas>=2.2.3",
     "sentence-transformers>=4.0.1",
+    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]
@@ -13,4 +14,5 @@ dev = [
     "mypy>=1.15.0",
     "pandas-stubs>=2.2.3.250308",
     "ruff>=0.11.2",
+    "types-tqdm>=4.67.0.20250319",
 ]

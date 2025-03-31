@@ -1,12 +1,14 @@
 from tcp_framework import (
     evaluate,
+    TcpApproach,
     TcpDataset,
-    Proposed,
+    CodeDistOrder,
     BaseOrder,
     RandomOrder,
     CodeXEmbed,
     CosSimDist,
     EuclidDist,
+    MannDist,
     MinAgg,
     AvgAgg,
     MaxAgg,
@@ -20,16 +22,14 @@ little_proxy = TcpDataset(
 
 vectorizer = CodeXEmbed()
 
-evaluate(
-    [
-        BaseOrder(),
-        RandomOrder(),
-        Proposed(vectorizer, CosSimDist(), MinAgg()),
-        Proposed(vectorizer, CosSimDist(), AvgAgg()),
-        Proposed(vectorizer, CosSimDist(), MaxAgg()),
-        Proposed(vectorizer, EuclidDist(), MinAgg()),
-        Proposed(vectorizer, EuclidDist(), AvgAgg()),
-        Proposed(vectorizer, EuclidDist(), MaxAgg()),
-    ],
-    little_proxy,
-)
+approaches: list[TcpApproach] = [
+    BaseOrder(),
+    RandomOrder(),
+]
+
+for dist in [CosSimDist(), EuclidDist(), MannDist()]:
+    for agg in [MinAgg(), AvgAgg(), MaxAgg()]:
+        for fail_adapt in [True, False]:
+            approaches.append(CodeDistOrder(vectorizer, dist, agg, fail_adapt, debug=True))
+
+evaluate(approaches, little_proxy, debug=True)

@@ -1,4 +1,4 @@
 from .aggregations import *
 from .distances import *
 from .vectorizers import *
-from .proposed import Proposed
+from .code_dist_order import CodeDistOrder
