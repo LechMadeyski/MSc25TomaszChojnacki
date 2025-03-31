@@ -1,29 +1,31 @@
-from typing import Sequence
+import numpy as np
 from sentence_transformers.util import cos_sim
-from ...datatypes import RunContext
+from ...datatypes import RunContext, TestCase
 from ..tcp_approach import TcpApproach
-from .vectorizers import CodeVectorizer, CodeVector
-
-
-def _dst(e1: CodeVector, e2: CodeVector) -> float:
-    return 1 - abs(cos_sim(e1, e2))
+from .aggregations import GroupAgg
+from .distances import VectorDist
+from .vectorizers import CodeVectorizer
 
 
 class Proposed(TcpApproach):
-    def __init__(self, vectorizer: CodeVectorizer) -> None:
+    def __init__(
+        self, vectorizer: CodeVectorizer, distance: VectorDist, aggregation: GroupAgg
+    ) -> None:
         self._vectorizer = vectorizer
+        self._distance = distance
+        self._aggregation = aggregation
 
     def prioritize(self, ctx: RunContext) -> None:
-        embeddings: dict[str, CodeVector] = {}
+        embeddings: dict[TestCase, np.ndarray] = {}
         for tc in ctx.test_cases:
-            embeddings[tc.name] = self._vectorizer.vectorize(ctx.inspect_code(tc))
+            embeddings[tc] = self._vectorizer(ctx.inspect_code(tc))
 
         start = max(
             ctx.test_cases,
-            key=lambda tc1: min(
-                _dst(embeddings[tc1.name], embeddings[tc2.name])
+            key=lambda tc1: self._aggregation(
+                self._distance(embeddings[tc1], embeddings[tc2])
                 for tc2 in ctx.test_cases
-                if tc1.name != tc2.name
+                if tc1 != tc2
             ),
         )
         prioritized = set([start])
@@ -34,8 +36,8 @@ class Proposed(TcpApproach):
         while queue:
             found = max(
                 queue,
-                key=lambda tc1: min(
-                    _dst(embeddings[tc1.name], embeddings[tc2.name])
+                key=lambda tc1: self._aggregation(
+                    self._distance(embeddings[tc1], embeddings[tc2])
                     for tc2 in prioritized
                 ),
             )

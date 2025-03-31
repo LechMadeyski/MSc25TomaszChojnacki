@@ -1,9 +1,7 @@
-from typing import Protocol, Sequence
+from typing import Protocol
 import numpy as np
-
-type CodeVector = list[float] | np.ndarray
 
 
 class CodeVectorizer(Protocol):
-    def vectorize(self, code: str) -> CodeVector:
+    def __call__(self, code: str) -> np.ndarray:
         raise NotImplementedError
