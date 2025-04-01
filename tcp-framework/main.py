@@ -8,6 +8,7 @@ from tcp_framework import (
     CodeXEmbed,
     EuclidDist,
     MinAgg,
+    DfeOrder
 )
 
 little_proxy = TcpDataset(
@@ -20,6 +21,7 @@ approaches: list[TcpApproach] = [
     BaseOrder(),
     RandomOrder(),
     CodeDistOrder(CodeXEmbed(), EuclidDist(), MinAgg(), fail_adapt=True, debug=True),
+    DfeOrder()
 ]
 
 evaluate(approaches, little_proxy, debug=True)

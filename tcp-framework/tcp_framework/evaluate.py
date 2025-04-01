@@ -49,7 +49,7 @@ def evaluate(
                 inspect_code=inspect_code,
             )
             approach.prioritize(ctx)
-            if Counter(test_infos) != Counter(result):
+            if Counter(tc.name for tc in test_infos) != Counter(tc.name for tc in result):
                 raise ValueError
 
             if gather_metrics:
