@@ -39,6 +39,8 @@ class TcpDataset:
     def runs(self) -> Generator[tuple[str, list[TestInfo]], None, None]:
         self._repo.git.checkout(".")
         for run_id, test_cases in self._run_dict.items():
+            if len(test_cases) == 0:
+                continue
             if run_id not in self._run_to_commit:
                 continue
             commit_id = self._run_to_commit[run_id]

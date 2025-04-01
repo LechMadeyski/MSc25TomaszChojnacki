@@ -16,14 +16,13 @@ def _metric_apfd(failures: list[int]) -> float:
     return 1 - (s / (n * m)) + (1 / (2 * n))
 
 
-def evaluate(approaches: list[TcpApproach], dataset: TcpDataset, *, debug: bool = False) -> None:
+def evaluate(
+    approaches: list[TcpApproach], dataset: TcpDataset, *, debug: bool = False
+) -> None:
     apfds: list[list[float]] = [[] for _ in approaches]
 
     for run_id, test_infos in dataset.runs():
         gather_metrics = sum(ti.failures for ti in test_infos) > 0
-
-        if not gather_metrics:
-            continue  # TODO
 
         if debug:
             print(f"Run ID: {run_id}")

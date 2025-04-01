@@ -24,8 +24,15 @@ class CodeDistOrder(TcpApproach):
         self._debug = debug
 
     def prioritize(self, ctx: RunContext) -> None:
+        if len(ctx.test_cases) <= 1:
+            if len(ctx.test_cases) == 1:
+                ctx.execute(ctx.test_cases[0])
+            return
+
         embeddings: dict[TestCase, np.ndarray] = {}
-        for tc in tqdm(ctx.test_cases, desc="Vectorizing", leave=False, disable=not self._debug):
+        for tc in tqdm(
+            ctx.test_cases, desc="Vectorizing", leave=False, disable=not self._debug
+        ):
             embeddings[tc] = self._vectorizer(ctx.inspect_code(tc))
 
         start = max(
