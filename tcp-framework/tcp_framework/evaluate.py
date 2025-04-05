@@ -24,7 +24,7 @@ def evaluate(
     for run_id, test_infos in dataset.runs():
         gather_metrics = sum(ti.failures for ti in test_infos) > 0
 
-        if debug:
+        if debug and gather_metrics:
             print(f"Run ID: {run_id}")
 
         def inspect_code(target: TestCase) -> str:
@@ -57,5 +57,5 @@ def evaluate(
 
         if debug and gather_metrics:
             for ai, approach in enumerate(approaches):
-                print(f"APFD_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3}, ", end="")
+                print(f"A_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3}, ", end="")
             print(flush=True)
