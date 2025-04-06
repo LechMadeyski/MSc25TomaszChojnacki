@@ -1,19 +1,20 @@
+from typing import override
 import numpy as np
 from tqdm import tqdm
 from ...datatypes import RunContext, TestCase
-from ..tcp_approach import TcpApproach
+from ..approach import Approach
 from .aggregations import GroupAgg
 from .distances import VectorDist
 from .vectorizers import CodeVectorizer
 
 
-class CodeDistOrder(TcpApproach):
+class CodeDistOrder(Approach):
     def __init__(
         self,
         vectorizer: CodeVectorizer,
         distance: VectorDist,
         aggregation: GroupAgg,
-        fail_adapt: bool = False,
+        fail_adapt: int = 0,
         *,
         debug: bool = False,
     ) -> None:
@@ -23,6 +24,7 @@ class CodeDistOrder(TcpApproach):
         self._fail_adapt = fail_adapt
         self._debug = debug
 
+    @override
     def prioritize(self, ctx: RunContext) -> None:
         if len(ctx.test_cases) <= 1:
             if len(ctx.test_cases) == 1:
@@ -53,10 +55,10 @@ class CodeDistOrder(TcpApproach):
         prioritized = set([start])
         queue = ctx.test_cases.copy()
         queue.remove(start)
-        last_result = ctx.execute(start)
+        local_searches = self._fail_adapt if ctx.execute(start).failures > 0 else 0
 
         while queue:
-            optimum = min if self._fail_adapt and last_result.failures > 0 else max
+            optimum = min if local_searches > 0 else max
             found = optimum(
                 queue,
                 key=lambda tc1: self._aggregation(
@@ -65,4 +67,8 @@ class CodeDistOrder(TcpApproach):
             )
             prioritized.add(found)
             queue.remove(found)
-            last_result = ctx.execute(found)
+            local_searches = (
+                self._fail_adapt
+                if ctx.execute(found).failures > 0
+                else local_searches - 1
+            )

@@ -1,8 +1,10 @@
+from typing import override
 from ...datatypes import RunContext
-from ..tcp_approach import TcpApproach
+from ..approach import Approach
 
 
-class BaseOrder(TcpApproach):
+class BaseOrder(Approach):
+    @override
     def prioritize(self, ctx: RunContext) -> None:
         for tc in ctx.test_cases:
             ctx.execute(tc)

@@ -1,8 +1,8 @@
 from collections import Counter
 from tqdm import tqdm
-from .approaches import TcpApproach
+from .approaches import Approach
 from .datatypes import RunContext, TestCase, TestInfo, TestResult
-from .tcp_dataset import TcpDataset
+from .dataset import Dataset
 
 
 def _metric_apfd(failures: list[int]) -> float:
@@ -17,10 +17,12 @@ def _metric_apfd(failures: list[int]) -> float:
     return 1 - (s / (n * m)) + (1 / (2 * n))
 
 
-def evaluate(
-    approaches: list[TcpApproach], dataset: TcpDataset, *, debug: int = 0
-) -> None:
+def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) -> None:
+    for approach in approaches:
+        approach.reset()
+
     apfds: list[list[float]] = [[] for _ in approaches]
+    optimal_apfds: list[float] = []
 
     for run_id, test_infos in tqdm(dataset.runs(), leave=False, disable=(debug != 1)):
         gather_metrics = sum(ti.failures for ti in test_infos) > 0
@@ -58,12 +60,24 @@ def evaluate(
             if gather_metrics:
                 apfds[ai].append(_metric_apfd([ti.failures for ti in result]))
 
+        if gather_metrics:
+            optimal_apfds.append(
+                _metric_apfd(
+                    [
+                        ti.failures
+                        for ti in sorted(
+                            test_infos, key=lambda ti: ti.failures, reverse=True
+                        )
+                    ]
+                )
+            )
+
         if debug > 1 and gather_metrics:
             for ai, approach in enumerate(approaches):
                 print(f"A_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}, ", end="")
-            print(flush=True)
+            print(f"O: {sum(optimal_apfds) / len(optimal_apfds):.3f}")
 
     if debug > 0:
         for ai, approach in enumerate(approaches):
             print(f"A_{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}, ", end="")
-        print(flush=True)
+        print(f"O: {sum(optimal_apfds) / len(optimal_apfds):.3f}")

@@ -1,28 +1,26 @@
 from tcp_framework import (
     evaluate,
-    TcpApproach,
-    TcpDataset,
+    Approach,
+    Dataset,
     CodeDistOrder,
-    BaseOrder,
     RandomOrder,
     CodeXEmbed,
     EuclidDist,
     MinAgg,
     FoldFailuresOrder,
+    BaseOrder,
 )
 
-approaches: list[TcpApproach] = [
+vectorizer = CodeXEmbed(slice=100)
+
+approaches: list[Approach] = [
     BaseOrder(),
     RandomOrder(),
-    CodeDistOrder(
-        CodeXEmbed(slice=100), EuclidDist(), MinAgg(), fail_adapt=True, debug=True
-    ),
     FoldFailuresOrder("dfe"),
-    FoldFailuresOrder("total"),
-    FoldFailuresOrder("recent"),
+    CodeDistOrder(vectorizer, EuclidDist(), MinAgg(), fail_adapt=3),
 ]
 
-little_proxy = TcpDataset(
+little_proxy = Dataset(
     runs_path="./datasets/adamfisk@LittleProxy.csv",
     repo_path="./datasets/LittleProxy",
     run_to_commit_path="./datasets/tr_all_built_commits.csv",
@@ -30,7 +28,7 @@ little_proxy = TcpDataset(
 evaluate(approaches, little_proxy, debug=1)
 del little_proxy
 
-jade4j = TcpDataset(
+jade4j = Dataset(
     runs_path="./datasets/neuland@jade4j.csv",
     repo_path="./datasets/jade4j",
     run_to_commit_path="./datasets/tr_all_built_commits.csv",
@@ -38,7 +36,7 @@ jade4j = TcpDataset(
 evaluate(approaches, jade4j, debug=1)
 del jade4j
 
-achilles = TcpDataset(
+achilles = Dataset(
     runs_path="./datasets/doanduyhai@Achilles.csv",
     repo_path="./datasets/Achilles",
     run_to_commit_path="./datasets/tr_all_built_commits.csv",

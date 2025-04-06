@@ -1,6 +1,6 @@
 from collections import defaultdict
-from typing import DefaultDict, Literal
-from ..tcp_approach import TcpApproach
+from typing import DefaultDict, Literal, override
+from ..approach import Approach
 from ...datatypes import RunContext, TestCase
 
 
@@ -28,7 +28,7 @@ def _recent(failures: list[int]) -> float:
     return -float("inf")
 
 
-class FoldFailuresOrder(TcpApproach):
+class FoldFailuresOrder(Approach):
     def __init__(
         self,
         func: Literal["dfe"] | Literal["total"] | Literal["last"] | Literal["recent"],
@@ -46,9 +46,14 @@ class FoldFailuresOrder(TcpApproach):
             case _:
                 raise ValueError
 
+    @override
     def prioritize(self, ctx: RunContext) -> None:
         for tc in sorted(
             ctx.test_cases, key=lambda tc: self._func(self._failures[tc]), reverse=True
         ):
             result = ctx.execute(tc)
             self._failures[tc].append(result.failures)
+
+    @override
+    def reset(self) -> None:
+        self._failures.clear()

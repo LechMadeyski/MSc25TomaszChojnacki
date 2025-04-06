@@ -4,7 +4,7 @@ import pandas as pd
 from .datatypes import TestInfo
 
 
-class TcpDataset:
+class Dataset:
     def __init__(
         self,
         runs_path: str,
