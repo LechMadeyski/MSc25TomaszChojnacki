@@ -5,14 +5,22 @@ from .datatypes import TestInfo
 
 
 class TcpDataset:
-    def __init__(self, runs_path: str, repo_path: str, run_to_commit_path: str):
+    def __init__(
+        self,
+        runs_path: str,
+        repo_path: str,
+        run_to_commit_path: str,
+        subprojects: Optional[list[str]] = None,
+    ) -> None:
         self._run_dict: dict[str, list[dict[str, Any]]] = (
             pd.read_csv(runs_path)
             .sort_values(["travisJobId", "index"])
             .astype({"travisJobId": "str"})
             .groupby("travisJobId", sort=False)
             .apply(
-                lambda x: x[["testName", "duration", "failures"]].to_dict("records"),
+                lambda x: x[["testName", "duration", "failures"]]
+                .drop_duplicates(["testName"])
+                .to_dict("records"),
                 include_groups=False,
             )
             .to_dict()
@@ -27,14 +35,23 @@ class TcpDataset:
             index=rtc_df["tr_job_id"].astype("str"),
         ).to_dict()
 
+        self._subprojects = subprojects
+
     def _read_content(self, name: str) -> Optional[str]:
-        try:
-            with open(
-                f"{self._repo_path}/src/test/java/{name.replace('.', '/')}.java", "r"
-            ) as f:
-                return f.read()
-        except:
-            return None
+        name = name.replace(".", "/") + ".java"
+        paths = [f"{self._repo_path}/src/test/java/{name}"]
+        if self._subprojects is not None:
+            paths += [
+                f"{self._repo_path}/{subproject}/src/test/java/{name}"
+                for subproject in self._subprojects
+            ]
+        for path in paths:
+            try:
+                with open(path, "r") as f:
+                    return f.read()
+            except:
+                pass
+        return None
 
     def runs(self) -> Generator[tuple[str, list[TestInfo]], None, None]:
         self._repo.git.checkout(".")
@@ -44,7 +61,10 @@ class TcpDataset:
             if run_id not in self._run_to_commit:
                 continue
             commit_id = self._run_to_commit[run_id]
-            self._repo.git.checkout(commit_id)
+            try:
+                self._repo.git.checkout(commit_id)
+            except:
+                continue
 
             for tc in test_cases:
                 tc["content"] = self._read_content(tc["testName"])

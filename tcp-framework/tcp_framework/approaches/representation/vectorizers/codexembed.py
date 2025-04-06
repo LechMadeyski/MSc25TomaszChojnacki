@@ -18,7 +18,7 @@ class CodeXEmbed(CodeVectorizer):
         if class_idx == -1:
             class_idx = 0
         code = code[class_idx:]
-        code = code[:self._slice] if self._slice else code
+        code = code[: self._slice] if self._slice else code
         h = hash(code)
         if h in self._cache:
             return self._cache[h]
