@@ -10,6 +10,7 @@ from tcp_framework import (
     FoldFailuresOrder,
     BaseOrder,
 )
+from tcp_framework.approaches.hybrid import Hybrid
 
 vectorizer = CodeXEmbed(slice=100)
 
@@ -18,6 +19,7 @@ approaches: list[Approach] = [
     RandomOrder(),
     FoldFailuresOrder("dfe"),
     CodeDistOrder(vectorizer, EuclidDist(), MinAgg(), fail_adapt=3),
+    Hybrid(vectorizer, EuclidDist(), MinAgg()),
 ]
 
 little_proxy = Dataset(
