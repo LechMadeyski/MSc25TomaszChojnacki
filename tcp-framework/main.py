@@ -8,16 +8,14 @@ from tcp_framework import (
     FaultCodeDistOrder,
     EuclidDist,
     MinAgg,
-    CodeXEmbed
+    StVectorizer
 )
-
-vectorizer = CodeXEmbed(slice=100)
 
 approaches: list[Approach] = [
     RandomOrder(),
     FoldFailuresOrder("dfe"),
     TestLocOrder(),
-    FaultCodeDistOrder(vectorizer, EuclidDist(), MinAgg()),
+    FaultCodeDistOrder(StVectorizer(), EuclidDist(), MinAgg()),
 ]
 
 repos = ["jOOQ@jOOQ", "adamfisk@LittleProxy", "brettwooldridge@HikariCP",

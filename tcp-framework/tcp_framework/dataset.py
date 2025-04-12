@@ -52,7 +52,6 @@ class Dataset:
         return None
 
     def runs(self) -> Generator[tuple[str, list[TestInfo]], None, None]:
-        self._repo.git.checkout(".")
         for run_id, test_cases in self._run_dict.items():
             if len(test_cases) == 0:
                 continue
@@ -60,12 +59,14 @@ class Dataset:
                 continue
             commit_id = self._run_to_commit[run_id]
             try:
-                self._repo.git.checkout(commit_id)
+                self._repo.git.checkout(commit_id, force=True)
             except:
                 continue
 
             for tc in test_cases:
                 tc["content"] = self._read_content(tc["testName"])
+                if tc["content"] is None:
+                    break
             if any(tc["content"] is None for tc in test_cases):
                 continue
 

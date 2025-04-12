@@ -1,17 +1,18 @@
+import logging
 from typing import Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from .code_vectorizer import CodeVectorizer
 
 
-class CodeXEmbed(CodeVectorizer):
-    def __init__(self, slice: Optional[int] = None) -> None:
+class StVectorizer(CodeVectorizer):
+    # Salesforce/SFR-Embedding-Code-400M_R, intfloat/e5-base-v2, BAAI/bge-base-en-v1.5, microsoft/unixcoder-base
+    def __init__(self, model: str = "BAAI/bge-base-en-v1.5", slice: Optional[int] = 100) -> None:
         self._slice = slice
         self._cache: dict[int, np.ndarray] = {}
-        self._model = SentenceTransformer(
-            "Salesforce/SFR-Embedding-Code-400M_R",
-            trust_remote_code=True,
-        )  # type: ignore
+        logging.disable(logging.CRITICAL)
+        self._model = SentenceTransformer(model, trust_remote_code=True)  # type: ignore
+        logging.disable(logging.NOTSET)
 
     def __call__(self, code: str) -> np.ndarray:
         class_idx = code.find("class")
@@ -22,6 +23,6 @@ class CodeXEmbed(CodeVectorizer):
         h = hash(code)
         if h in self._cache:
             return self._cache[h]
-        embedding = self._model.encode(code)
+        embedding = self._model.encode(code, normalize_embeddings=True)
         self._cache[h] = embedding
         return embedding
