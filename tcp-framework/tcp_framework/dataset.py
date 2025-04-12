@@ -11,12 +11,13 @@ class Dataset:
     def __init__(self, *, runs_path: Path, repo_path: Path, rc_map: dict[str, str] | Path) -> None:
         self._run_dict: dict[str, list[dict[str, Any]]] = (
             pd.read_csv(runs_path)
-            .rename({"testName": "name"})
-            .sort_values(["travisJobId", "index"])
-            .astype({"travisJobId": "str"})
-            .groupby("travisJobId", sort=False)
+            .rename(columns={"travisJobId": "run_id", "testName": "name"})
+            .sort_values(["run_id", "index"])
+            .astype({"run_id": str})
+            .drop_duplicates(["run_id", "name"])
+            .groupby("run_id", sort=False)
             .apply(
-                lambda x: x[["name", "duration", "failures"]].drop_duplicates("name").to_dict("records"),
+                lambda x: x[["name", "duration", "failures"]].to_dict("records"),
                 include_groups=False,
             )
             .to_dict()
@@ -34,12 +35,9 @@ class Dataset:
 
     @classmethod
     def preload_rc_map(cls, rc_map_path: Path) -> dict[str, str]:
-        rc_map: dict[str, str] = {}
         with open(rc_map_path) as f:
             reader = csv.reader(f)
-            for run_id, commit_id in reader:
-                rc_map[run_id] = commit_id
-        return rc_map
+            return {run_id: commit_id for run_id, commit_id in reader}
 
     def _read_content(self, name: str) -> Optional[str]:
         name = name.replace(".", "/") + ".java"
@@ -69,7 +67,7 @@ class Dataset:
                 continue
 
             for tc in test_cases:
-                tc["content"] = self._read_content(tc["testName"])
+                tc["content"] = self._read_content(tc["name"])
                 if tc["content"] is None:
                     break
             if any(tc["content"] is None for tc in test_cases):
