@@ -4,41 +4,32 @@ from tcp_framework import (
     Dataset,
     RandomOrder,
     FoldFailuresOrder,
-    BaseOrder,
     TestLocOrder,
+    FaultCodeDistOrder,
+    EuclidDist,
+    MinAgg,
+    CodeXEmbed
 )
 
-# vectorizer = CodeXEmbed(slice=100)
+vectorizer = CodeXEmbed(slice=100)
 
 approaches: list[Approach] = [
-    BaseOrder(),
     RandomOrder(),
     FoldFailuresOrder("dfe"),
     TestLocOrder(),
-    # CodeDistOrder(vectorizer, EuclidDist(), MinAgg(), fail_adapt=3),
-    # FaultCodeDistOrder(vectorizer, EuclidDist(), MinAgg()),
+    FaultCodeDistOrder(vectorizer, EuclidDist(), MinAgg()),
 ]
 
-little_proxy = Dataset(
-    runs_path="./datasets/adamfisk@LittleProxy.csv",
-    repo_path="./datasets/LittleProxy",
-    run_to_commit_path="./datasets/tr_all_built_commits.csv",
-)
-evaluate(approaches, little_proxy, debug=1)
-del little_proxy
+repos = ["jOOQ@jOOQ", "adamfisk@LittleProxy", "brettwooldridge@HikariCP",
+         "neuland@jade4j", "CloudifySource@cloudify", "DSpace@DSpace",
+         "dynjs@dynjs", "Graylog2@graylog2-server", "doanduyhai@Achilles"]
+# TODO: deeplearning4j, buck
 
-jade4j = Dataset(
-    runs_path="./datasets/neuland@jade4j.csv",
-    repo_path="./datasets/jade4j",
-    run_to_commit_path="./datasets/tr_all_built_commits.csv",
-)
-evaluate(approaches, jade4j, debug=1)
-del jade4j
-
-achilles = Dataset(
-    runs_path="./datasets/doanduyhai@Achilles.csv",
-    repo_path="./datasets/Achilles",
-    run_to_commit_path="./datasets/tr_all_built_commits.csv",
-)
-evaluate(approaches, achilles, debug=1)
-del achilles
+for repo in repos:
+    dataset = Dataset(
+        runs_path=f"./datasets/{repo}.csv",
+        repo_path=f"./datasets/{repo.split('@')[1]}",
+        run_to_commit_path="./datasets/tr_all_built_commits.csv",
+    )
+    evaluate(approaches, dataset, debug=1)
+    del dataset

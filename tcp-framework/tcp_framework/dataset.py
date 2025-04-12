@@ -8,6 +8,7 @@ from .datatypes import TestInfo
 class Dataset:
     def __init__(
         self,
+        *,
         runs_path: str,
         repo_path: str,
         run_to_commit_path: str
