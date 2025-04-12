@@ -1,4 +1,5 @@
 from typing import Any, Generator, Optional
+import os
 import git
 import pandas as pd
 from .datatypes import TestInfo
@@ -9,8 +10,7 @@ class Dataset:
         self,
         runs_path: str,
         repo_path: str,
-        run_to_commit_path: str,
-        subprojects: Optional[list[str]] = None,
+        run_to_commit_path: str
     ) -> None:
         self._run_dict: dict[str, list[dict[str, Any]]] = (
             pd.read_csv(runs_path)
@@ -35,16 +35,13 @@ class Dataset:
             index=rtc_df["tr_job_id"].astype("str"),
         ).to_dict()
 
-        self._subprojects = subprojects
-
     def _read_content(self, name: str) -> Optional[str]:
         name = name.replace(".", "/") + ".java"
-        paths = [f"{self._repo_path}/src/test/java/{name}"]
-        if self._subprojects is not None:
-            paths += [
-                f"{self._repo_path}/{subproject}/src/test/java/{name}"
-                for subproject in self._subprojects
-            ]
+        paths = [os.path.join(self._repo_path, "src/test/java", name)]
+        for d in os.listdir(self._repo_path):
+            d = os.path.join(self._repo_path, d)
+            if os.path.isdir(d):
+                paths.append(os.path.join(d, "src/test/java", name))
         for path in paths:
             try:
                 with open(path, "r") as f:

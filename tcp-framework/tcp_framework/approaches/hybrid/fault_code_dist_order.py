@@ -3,14 +3,14 @@ from typing import DefaultDict, override
 from itertools import groupby
 import numpy as np
 from tqdm import tqdm
-from ..datatypes import RunContext, TestCase
-from .approach import Approach
-from .representation.aggregations import GroupAgg
-from .representation.distances import VectorDist
-from .representation.vectorizers import CodeVectorizer
+from ...datatypes import RunContext, TestCase
+from ..approach import Approach
+from ..representation.aggregations import GroupAgg
+from ..representation.distances import VectorDist
+from ..representation.vectorizers import CodeVectorizer
 
 
-class Hybrid(Approach):
+class FaultCodeDistOrder(Approach):
     def __init__(
         self,
         vectorizer: CodeVectorizer,
@@ -52,7 +52,7 @@ class Hybrid(Approach):
         prioritized: set[TestCase] = set()
 
         for cluster in clusters:
-            optimum = min if len(prioritized) < len(ctx.test_cases) // 2 else max
+            optimum = min if len(prioritized) < len(ctx.test_cases) * 0.5 else max
 
             if len(cluster) == 1:
                 target = cluster.pop()
@@ -84,3 +84,7 @@ class Hybrid(Approach):
                 result = ctx.execute(target)
                 prioritized.add(target)
                 self._total_failures[target.name] += abs(result.failures)
+
+    @override
+    def reset(self) -> None:
+        self._total_failures.clear()
