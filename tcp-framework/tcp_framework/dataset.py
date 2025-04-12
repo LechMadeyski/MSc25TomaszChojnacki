@@ -1,27 +1,22 @@
+import csv
 from typing import Any, Generator, Optional
 import os
+from pathlib import Path
 import git
 import pandas as pd
 from .datatypes import TestInfo
 
 
 class Dataset:
-    def __init__(
-        self,
-        *,
-        runs_path: str,
-        repo_path: str,
-        run_to_commit_path: str
-    ) -> None:
+    def __init__(self, *, runs_path: Path, repo_path: Path, rc_map: dict[str, str] | Path) -> None:
         self._run_dict: dict[str, list[dict[str, Any]]] = (
             pd.read_csv(runs_path)
+            .rename({"testName": "name"})
             .sort_values(["travisJobId", "index"])
             .astype({"travisJobId": "str"})
             .groupby("travisJobId", sort=False)
             .apply(
-                lambda x: x[["testName", "duration", "failures"]]
-                .drop_duplicates(["testName"])
-                .to_dict("records"),
+                lambda x: x[["name", "duration", "failures"]].drop_duplicates("name").to_dict("records"),
                 include_groups=False,
             )
             .to_dict()
@@ -30,11 +25,21 @@ class Dataset:
         self._repo_path = repo_path
         self._repo = git.Repo(repo_path)
 
-        rtc_df = pd.read_csv(run_to_commit_path)
-        self._run_to_commit: dict[str, str] = pd.Series(
-            rtc_df["git_commit_id"].astype("str").values,
-            index=rtc_df["tr_job_id"].astype("str"),
-        ).to_dict()
+        if isinstance(rc_map, dict):
+            self._rc_map = rc_map
+        elif isinstance(rc_map, Path):
+            self._rc_map = self.preload_rc_map(rc_map)
+        else:
+            raise ValueError
+
+    @classmethod
+    def preload_rc_map(cls, rc_map_path: Path) -> dict[str, str]:
+        rc_map: dict[str, str] = {}
+        with open(rc_map_path) as f:
+            reader = csv.reader(f)
+            for run_id, commit_id in reader:
+                rc_map[run_id] = commit_id
+        return rc_map
 
     def _read_content(self, name: str) -> Optional[str]:
         name = name.replace(".", "/") + ".java"
@@ -45,7 +50,7 @@ class Dataset:
                 paths.append(os.path.join(d, "src/test/java", name))
         for path in paths:
             try:
-                with open(path, "r") as f:
+                with open(path) as f:
                     return f.read()
             except:
                 pass
@@ -55,9 +60,9 @@ class Dataset:
         for run_id, test_cases in self._run_dict.items():
             if len(test_cases) == 0:
                 continue
-            if run_id not in self._run_to_commit:
+            commit_id = self._rc_map.get(run_id)
+            if commit_id is None:
                 continue
-            commit_id = self._run_to_commit[run_id]
             try:
                 self._repo.git.checkout(commit_id, force=True)
             except:
@@ -74,7 +79,7 @@ class Dataset:
                 run_id,
                 [
                     TestInfo(
-                        name=tc["testName"],
+                        name=tc["name"],
                         content=tc["content"],
                         failures=tc["failures"],
                         duration_s=tc["duration"],

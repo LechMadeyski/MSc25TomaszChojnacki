@@ -32,25 +32,19 @@ class CodeDistOrder(Approach):
             return
 
         embeddings: dict[TestCase, np.ndarray] = {}
-        for tc in tqdm(
-            ctx.test_cases, desc="Vectorizing", leave=False, disable=not self._debug
-        ):
+        for tc in tqdm(ctx.test_cases, desc="Vectorizing", leave=False, disable=not self._debug):
             embeddings[tc] = self._vectorizer(ctx.inspect_code(tc))
 
         distances: dict[tuple[TestCase, TestCase], float] = {}
         for i, tc1 in enumerate(ctx.test_cases):
             for tc2 in ctx.test_cases[i + 1 :]:
                 if tc1 != tc2:
-                    distances[(tc1, tc2)] = self._distance(
-                        embeddings[tc1], embeddings[tc2]
-                    )
+                    distances[(tc1, tc2)] = self._distance(embeddings[tc1], embeddings[tc2])
                     distances[(tc2, tc1)] = distances[(tc1, tc2)]
 
         start = max(
             ctx.test_cases,
-            key=lambda tc1: self._aggregation(
-                distances[(tc1, tc2)] for tc2 in ctx.test_cases if tc1 != tc2
-            ),
+            key=lambda tc1: self._aggregation(distances[(tc1, tc2)] for tc2 in ctx.test_cases if tc1 != tc2),
         )
         prioritized = set([start])
         queue = ctx.test_cases.copy()
@@ -61,14 +55,8 @@ class CodeDistOrder(Approach):
             optimum = min if local_searches > 0 else max
             found = optimum(
                 queue,
-                key=lambda tc1: self._aggregation(
-                    distances[(tc1, tc2)] for tc2 in prioritized
-                ),
+                key=lambda tc1: self._aggregation(distances[(tc1, tc2)] for tc2 in prioritized),
             )
             prioritized.add(found)
             queue.remove(found)
-            local_searches = (
-                self._fail_adapt
-                if ctx.execute(found).failures > 0
-                else local_searches - 1
-            )
+            local_searches = self._fail_adapt if ctx.execute(found).failures > 0 else local_searches - 1

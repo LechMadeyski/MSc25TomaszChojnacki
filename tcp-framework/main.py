@@ -1,3 +1,4 @@
+from pathlib import Path
 from tcp_framework import (
     evaluate,
     Approach,
@@ -8,7 +9,7 @@ from tcp_framework import (
     FaultCodeDistOrder,
     EuclidDist,
     MinAgg,
-    StVectorizer
+    StVectorizer,
 )
 
 approaches: list[Approach] = [
@@ -18,16 +19,28 @@ approaches: list[Approach] = [
     FaultCodeDistOrder(StVectorizer(), EuclidDist(), MinAgg()),
 ]
 
-repos = ["jOOQ@jOOQ", "adamfisk@LittleProxy", "brettwooldridge@HikariCP",
-         "neuland@jade4j", "CloudifySource@cloudify", "DSpace@DSpace",
-         "dynjs@dynjs", "Graylog2@graylog2-server", "doanduyhai@Achilles"]
+repos = [
+    "adamfisk@LittleProxy",
+    "brettwooldridge@HikariCP",
+    "jOOQ@jOOQ",
+    "neuland@jade4j",
+    "CloudifySource@cloudify",
+    "DSpace@DSpace",
+    "dynjs@dynjs",
+    "Graylog2@graylog2-server",
+    "doanduyhai@Achilles",
+]
 # TODO: deeplearning4j, buck
 
+rc_map = Dataset.preload_rc_map(Path("./datasets/tr_all_built_commits.csv"))
+
 for repo in repos:
-    dataset = Dataset(
-        runs_path=f"./datasets/{repo}.csv",
-        repo_path=f"./datasets/{repo.split('@')[1]}",
-        run_to_commit_path="./datasets/tr_all_built_commits.csv",
+    evaluate(
+        approaches,
+        Dataset(
+            runs_path=Path(f"./datasets/{repo}.csv"),
+            repo_path=Path(f"./datasets/{repo.split('@')[1]}"),
+            rc_map=rc_map,
+        ),
+        debug=1,
     )
-    evaluate(approaches, dataset, debug=1)
-    del dataset

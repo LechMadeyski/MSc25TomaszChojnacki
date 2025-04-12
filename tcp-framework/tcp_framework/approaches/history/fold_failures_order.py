@@ -48,9 +48,7 @@ class FoldFailuresOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        for tc in sorted(
-            ctx.test_cases, key=lambda tc: self._func(self._failures[tc]), reverse=True
-        ):
+        for tc in sorted(ctx.test_cases, key=lambda tc: self._func(self._failures[tc]), reverse=True):
             result = ctx.execute(tc)
             self._failures[tc].append(result.failures)
 

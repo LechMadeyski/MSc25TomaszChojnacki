@@ -51,9 +51,7 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
                 inspect_code=inspect_code,
             )
             approach.prioritize(ctx)
-            if Counter(tc.name for tc in test_infos) != Counter(
-                tc.name for tc in result
-            ):
+            if Counter(tc.name for tc in test_infos) != Counter(tc.name for tc in result):
                 raise ValueError
 
             if gather_metrics:
