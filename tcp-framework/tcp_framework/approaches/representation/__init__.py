@@ -7,3 +7,4 @@ from .distances import (
 )
 from .vectorizers import CodeVectorizer as CodeVectorizer, StVectorizer as StVectorizer
 from .code_dist_order import CodeDistOrder as CodeDistOrder
+from .lazy_code_dist_map import LazyCodeDistMap as LazyCodeDistMap

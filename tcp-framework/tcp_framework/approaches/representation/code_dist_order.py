@@ -1,8 +1,7 @@
 from typing import override
-import numpy as np
-from tqdm import tqdm
-from ...datatypes import RunContext, TestCase
+from ...datatypes import RunContext
 from ..approach import Approach
+from .lazy_code_dist_map import LazyCodeDistMap
 from .aggregations import GroupAgg
 from .distances import VectorDist
 from .vectorizers import CodeVectorizer
@@ -15,31 +14,19 @@ class CodeDistOrder(Approach):
         distance: VectorDist,
         aggregation: GroupAgg,
         fail_adapt: int = 0,
-        *,
-        debug: bool = False,
     ) -> None:
         self._vectorizer = vectorizer
         self._distance = distance
         self._aggregation = aggregation
         self._fail_adapt = fail_adapt
-        self._debug = debug
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        embeddings: dict[TestCase, np.ndarray] = {}
-        for tc in tqdm(ctx.test_cases, desc="Vectorizing", leave=False, disable=not self._debug):
-            embeddings[tc] = self._vectorizer(ctx.inspect_code(tc))
-
-        distances: dict[tuple[TestCase, TestCase], float] = {}
-        for i, tc1 in enumerate(ctx.test_cases):
-            for tc2 in ctx.test_cases[i + 1 :]:
-                if tc1 != tc2:
-                    distances[(tc1, tc2)] = self._distance(embeddings[tc1], embeddings[tc2])
-                    distances[(tc2, tc1)] = distances[(tc1, tc2)]
+        distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
 
         start = max(
             ctx.test_cases,
-            key=lambda tc1: self._aggregation(distances[(tc1, tc2)] for tc2 in ctx.test_cases if tc1 != tc2),
+            key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in ctx.test_cases if tc1 != tc2),
         )
         prioritized = set([start])
         queue = ctx.test_cases.copy()
@@ -50,7 +37,7 @@ class CodeDistOrder(Approach):
             optimum = min if local_searches > 0 else max
             found = optimum(
                 queue,
-                key=lambda tc1: self._aggregation(distances[(tc1, tc2)] for tc2 in prioritized),
+                key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in prioritized),
             )
             prioritized.add(found)
             queue.remove(found)
