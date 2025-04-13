@@ -7,7 +7,7 @@ from tcp_framework import (
     FoldFailuresOrder,
     FaultCodeDistOrder,
 )
-from tcp_framework.approaches.representation import EuclidDist, MinAgg, StVectorizer
+from tcp_framework.approaches.representation import StVectorizer
 
 REPOS = [
     "LittleProxy",
@@ -24,12 +24,10 @@ REPOS = [
     "graylog2-server",
 ]
 
-vectorizer = StVectorizer()
-
 APPROACHES: list[Approach] = [
     RandomOrder(),
-    FoldFailuresOrder("dfe"),
-    FaultCodeDistOrder(vectorizer, EuclidDist(), MinAgg()),
+    FoldFailuresOrder(),
+    FaultCodeDistOrder(StVectorizer()),
 ]
 
 if __name__ == "__main__":
@@ -40,10 +38,5 @@ if __name__ == "__main__":
         for repo in REPOS
     ]
 
-    print("=== DATASETS ===")
-    for dataset in datasets:
-        dataset.describe()
-
-    print("\n=== APPROACHES ===")
     for dataset in datasets:
         evaluate(APPROACHES, dataset, debug=1)

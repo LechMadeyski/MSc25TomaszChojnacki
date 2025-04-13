@@ -61,10 +61,10 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
 
         if debug > 1 and gather_metrics:
             for ai, approach in enumerate(approaches):
-                print(f"A{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
+                print(f"A{ai + 1}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
             print(f"   {dataset.name}")
 
     if debug > 0:
         for ai, approach in enumerate(approaches):
-            print(f"A{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
+            print(f"A{ai + 1}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
         print(f"   {dataset.name}")

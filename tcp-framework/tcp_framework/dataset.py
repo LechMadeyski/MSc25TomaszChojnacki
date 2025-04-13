@@ -98,15 +98,15 @@ class Dataset:
             )
 
         if debug:
-            if len(invalid_runs) > 0:
+            if invalid_runs:
                 print(
                     f"  INVALID RUN [{len(invalid_runs)}]: {invalid_runs[:5]}{'...' if len(invalid_runs) > 5 else ''}"
                 )
-            if len(invalid_commits) > 0:
+            if invalid_commits:
                 print(
                     f"  INVALID COMMIT [{len(invalid_commits)}]: {invalid_commits[:5]}{'...' if len(invalid_commits) > 5 else ''}"
                 )
-            if len(invalid_files) > 0:
+            if invalid_files:
                 print(
                     f"  INVALID FILE [{len(invalid_files)}]: {invalid_files[:5]}{'...' if len(invalid_files) > 5 else ''}"
                 )
