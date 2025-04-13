@@ -1,2 +1,2 @@
-from .code_vectorizer import CodeVectorizer
-from .st_vectorizer import StVectorizer
+from .code_vectorizer import CodeVectorizer as CodeVectorizer
+from .st_vectorizer import StVectorizer as StVectorizer

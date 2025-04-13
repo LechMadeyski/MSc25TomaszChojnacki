@@ -1,1 +1,1 @@
-from .fold_failures_order import FoldFailuresOrder
+from .fold_failures_order import FoldFailuresOrder as FoldFailuresOrder

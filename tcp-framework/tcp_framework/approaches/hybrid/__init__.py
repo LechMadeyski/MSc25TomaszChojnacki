@@ -1,1 +1,1 @@
-from .fault_code_dist_order import FaultCodeDistOrder
+from .fault_code_dist_order import FaultCodeDistOrder as FaultCodeDistOrder

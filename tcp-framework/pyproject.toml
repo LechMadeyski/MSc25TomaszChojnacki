@@ -17,5 +17,14 @@ dev = [
     "types-tqdm>=4.67.0.20250319",
 ]
 
+[tool.mypy]
+exclude = ["datasets"]
+disallow_untyped_defs = true
+warn_redundant_casts = true
+strict_equality = true
+disallow_untyped_calls = true
+disallow_any_unimported = true
+
 [tool.ruff]
+extend-exclude = ["datasets"]
 line-length = 120

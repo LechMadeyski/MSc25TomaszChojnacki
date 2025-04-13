@@ -23,7 +23,9 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
 
     apfds: list[list[float]] = [[] for _ in approaches]
 
-    for run_id, test_infos in tqdm(dataset.runs(), leave=False, disable=(debug != 1)):
+    runs = dataset.runs(debug=debug > 1)
+
+    for run_id, test_infos in tqdm(runs, desc="evaluate", leave=False, disable=(debug != 1)):
         gather_metrics = sum(ti.failures for ti in test_infos) > 0
 
         if debug > 1 and gather_metrics:
@@ -60,9 +62,9 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
         if debug > 1 and gather_metrics:
             for ai, approach in enumerate(approaches):
                 print(f"A{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
-            print()
+            print(f"   {dataset.name}")
 
     if debug > 0:
         for ai, approach in enumerate(approaches):
             print(f"A{ai}: {sum(apfds[ai]) / len(apfds[ai]):.3f}   ", end="")
-        print()
+        print(f"   {dataset.name}")
