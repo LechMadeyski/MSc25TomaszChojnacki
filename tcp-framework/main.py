@@ -4,8 +4,8 @@ from tcp_framework import (
     Approach,
     Dataset,
     RandomOrder,
-    FoldFailuresOrder,
-    FaultCodeDistOrder,
+    FoldFailsOrder,
+    FailCodeDistOrder,
 )
 from tcp_framework.approaches.representation import StVectorizer
 
@@ -26,8 +26,8 @@ REPOS = [
 
 APPROACHES: list[Approach] = [
     RandomOrder(),
-    FoldFailuresOrder(),
-    FaultCodeDistOrder(StVectorizer()),
+    FoldFailsOrder(),
+    FailCodeDistOrder(StVectorizer()),
 ]
 
 if __name__ == "__main__":

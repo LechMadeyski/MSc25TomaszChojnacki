@@ -31,7 +31,7 @@ class CodeDistOrder(Approach):
         prioritized = set([start])
         queue = ctx.test_cases.copy()
         queue.remove(start)
-        local_searches = self._fail_adapt if ctx.execute(start).failures > 0 else 0
+        local_searches = self._fail_adapt if ctx.execute(start).fails > 0 else 0
 
         while queue:
             optimum = min if local_searches > 0 else max
@@ -41,4 +41,4 @@ class CodeDistOrder(Approach):
             )
             prioritized.add(found)
             queue.remove(found)
-            local_searches = self._fail_adapt if ctx.execute(found).failures > 0 else local_searches - 1
+            local_searches = self._fail_adapt if ctx.execute(found).fails > 0 else local_searches - 1

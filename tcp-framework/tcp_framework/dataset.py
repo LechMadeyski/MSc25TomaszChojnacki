@@ -7,7 +7,7 @@ from pathlib import Path
 import git
 import pandas as pd
 from tqdm import tqdm
-from .datatypes import TestInfo
+from .datatypes import TestCase, TestInfo, VisibleTestResult
 
 type DatasetRuns = list[tuple[str, list[TestInfo]]]
 
@@ -32,7 +32,7 @@ class Dataset:
     def describe(self) -> None:
         data = self.runs(debug=True)
         runs = len(data)
-        fail = sum(1 for _, tis in data if any(ti.failures > 0 for ti in tis)) / runs
+        fail = sum(1 for _, tis in data if any(ti.result.fails > 0 for ti in tis)) / runs
         tests = sum(len(tis) for _, tis in data) / runs
         name = self._runs_path.stem
         print(f"{name[:16]: >16}: {runs: >6} runs, {fail:>6.1%} fail, {tests:>6.1f} tests")
@@ -43,13 +43,13 @@ class Dataset:
 
         runs_dict: dict[str, list[dict[str, Any]]] = (
             pd.read_csv(self._runs_path)
-            .rename(columns={"travisJobId": "run_id", "testName": "name"})
+            .rename(columns={"travisJobId": "run_id", "testName": "name", "duration": "time_s", "failures": "fails"})
             .astype({"run_id": str})
             .sort_values(["run_id", "index"])
             .drop_duplicates(["run_id", "name"])
             .groupby("run_id", sort=False)
             .apply(
-                lambda x: x[["name", "duration", "failures"]].to_dict("records"),
+                lambda x: x[["name", "fails", "time_s"]].to_dict("records"),
                 include_groups=False,
             )
             .to_dict()
@@ -87,10 +87,9 @@ class Dataset:
                     run_id,
                     [
                         TestInfo(
-                            name=tc["name"],
+                            case=TestCase(tc["name"]),
                             content=tc["content"],
-                            failures=tc["failures"],
-                            duration_s=tc["duration"],
+                            result=VisibleTestResult(fails=tc["fails"], time_s=tc["time_s"]),
                         )
                         for tc in test_cases
                     ],

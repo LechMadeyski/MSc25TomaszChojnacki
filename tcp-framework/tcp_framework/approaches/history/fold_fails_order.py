@@ -4,26 +4,26 @@ from typing import Callable, Literal, override
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase
 
-type FailureFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
+type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 
 
-class FoldFailuresOrder(Approach):
-    def __init__(self, folder: FailureFolder = ("dfe", 0.8)) -> None:
+class FoldFailsOrder(Approach):
+    def __init__(self, folder: FailFolder = ("dfe", 0.8)) -> None:
         initial, self._fold = self._select_folder(folder)
-        self._failures: defaultdict[TestCase, float] = defaultdict(lambda: initial)
+        self._fails: defaultdict[TestCase, float] = defaultdict(lambda: initial)
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        for tc in sorted(ctx.test_cases, key=lambda tc: self._failures[tc], reverse=True):
+        for tc in sorted(ctx.test_cases, key=lambda tc: self._fails[tc], reverse=True):
             result = ctx.execute(tc)
-            self._failures[tc] = self._fold(self._failures[tc], result.failures)
+            self._fails[tc] = self._fold(self._fails[tc], result.fails)
 
     @override
     def reset(self) -> None:
-        self._failures.clear()
+        self._fails.clear()
 
     @classmethod
-    def _select_folder(cls, folder: FailureFolder) -> tuple[float, Callable[[float, int], float]]:
+    def _select_folder(cls, folder: FailFolder) -> tuple[float, Callable[[float, int], float]]:
         match folder:
             case ("dfe", alpha):
                 assert isinstance(alpha, float)  # silence mypy

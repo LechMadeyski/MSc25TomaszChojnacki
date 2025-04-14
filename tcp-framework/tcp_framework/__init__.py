@@ -3,8 +3,8 @@ __version__ = "0.1.0"
 from .approaches import (
     BaseOrder as BaseOrder,
     RandomOrder as RandomOrder,
-    FoldFailuresOrder as FoldFailuresOrder,
-    FaultCodeDistOrder as FaultCodeDistOrder,
+    FoldFailsOrder as FoldFailsOrder,
+    FailCodeDistOrder as FailCodeDistOrder,
     CodeDistOrder as CodeDistOrder,
     TestLocOrder as TestLocOrder,
     Approach as Approach,

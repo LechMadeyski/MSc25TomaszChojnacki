@@ -6,14 +6,14 @@ from ..approach import Approach
 from ..representation import GroupAgg, MinAgg, VectorDist, EuclidDist, CodeVectorizer, LazyCodeDistMap
 
 
-class FaultCodeDistOrder(Approach):
+class FailCodeDistOrder(Approach):
     def __init__(
         self,
         vectorizer: CodeVectorizer,
         distance: VectorDist = EuclidDist(),
         aggregation: GroupAgg = MinAgg(),
     ) -> None:
-        self._total_failures: DefaultDict[str, int] = defaultdict(lambda: 0)
+        self._total_fails: DefaultDict[str, int] = defaultdict(lambda: 0)
         self._vectorizer = vectorizer
         self._distance = distance
         self._aggregation = aggregation
@@ -25,8 +25,8 @@ class FaultCodeDistOrder(Approach):
         clusters = [
             set(g)
             for _, g in groupby(
-                sorted(ctx.test_cases, key=lambda tc: self._total_failures[tc.name], reverse=True),
-                key=lambda tc: self._total_failures[tc.name],
+                sorted(ctx.test_cases, key=lambda tc: self._total_fails[tc.name], reverse=True),
+                key=lambda tc: self._total_fails[tc.name],
             )
         ]
 
@@ -38,7 +38,7 @@ class FaultCodeDistOrder(Approach):
                 cluster.remove(target)
                 result = ctx.execute(target)
                 prioritized.add(target)
-                self._total_failures[target.name] += result.failures
+                self._total_fails[target.name] += result.fails
 
             if len(cluster) == 1:
                 (target,) = cluster
@@ -63,4 +63,4 @@ class FaultCodeDistOrder(Approach):
 
     @override
     def reset(self) -> None:
-        self._total_failures.clear()
+        self._total_fails.clear()
