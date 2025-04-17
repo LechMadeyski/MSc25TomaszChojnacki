@@ -1,0 +1,30 @@
+[project]
+name = "tcp-framework"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "gitpython>=3.1.44",
+    "pandas>=2.2.3",
+    "sentence-transformers>=4.0.1",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pandas-stubs>=2.2.3.250308",
+    "ruff>=0.11.2",
+    "types-tqdm>=4.67.0.20250319",
+]
+
+[tool.mypy]
+exclude = ["datasets"]
+disallow_untyped_defs = true
+warn_redundant_casts = true
+strict_equality = true
+disallow_untyped_calls = true
+disallow_any_unimported = true
+
+[tool.ruff]
+extend-exclude = ["datasets"]
+line-length = 120
