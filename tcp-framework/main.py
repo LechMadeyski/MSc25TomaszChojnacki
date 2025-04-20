@@ -6,6 +6,7 @@ from tcp_framework import (
     RandomOrder,
     FoldFailsOrder,
     FailCodeDistOrder,
+    PassthroughOrder,
 )
 from tcp_framework.approaches.representation import StVectorizer
 
@@ -27,6 +28,7 @@ REPOS = [
 APPROACHES: list[Approach] = [
     RandomOrder(),
     FoldFailsOrder(),
+    PassthroughOrder(FoldFailsOrder()),
     FailCodeDistOrder(StVectorizer()),
 ]
 
@@ -38,8 +40,8 @@ if __name__ == "__main__":
         for repo in REPOS
     ]
 
-    for dataset in datasets:
-        dataset.describe()
+    # for dataset in datasets:
+    #     dataset.describe()
 
     for dataset in datasets:
         evaluate(APPROACHES, dataset, debug=1)

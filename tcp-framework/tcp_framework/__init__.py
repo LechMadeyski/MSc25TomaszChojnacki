@@ -7,6 +7,7 @@ from .approaches import (
     FailCodeDistOrder as FailCodeDistOrder,
     CodeDistOrder as CodeDistOrder,
     TestLocOrder as TestLocOrder,
+    PassthroughOrder as PassthroughOrder,
     Approach as Approach,
 )
 from .evaluate import evaluate as evaluate

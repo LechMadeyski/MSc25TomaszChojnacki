@@ -34,6 +34,7 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
             ctx = RunContext(test_infos)
             approach.prioritize(ctx)
             result = ctx.prioritized_infos()
+            approach.on_static_feedback(result)
 
             if gather_metrics:
                 apfds[ai].append(_metric_apfd([ti.result.fails for ti in result]))

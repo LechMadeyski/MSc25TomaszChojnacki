@@ -3,7 +3,7 @@ from math import inf
 from random import Random
 from typing import Callable, Literal, Optional, override
 from ..approach import Approach
-from ...datatypes import RunContext, TestCase
+from ...datatypes import RunContext, TestCase, TestInfo
 
 type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 
@@ -25,12 +25,15 @@ class FoldFailsOrder(Approach):
                     weights = [1.0] * len(queue)
                 [tc] = self._rng.choices(queue, weights)
                 queue.remove(tc)
-                result = ctx.execute(tc)
-                self._fails[tc] = self._fold(self._fails[tc], result.fails)
+                ctx.execute(tc)
         else:
             for tc in sorted(ctx.test_cases, key=lambda tc: self._fails[tc], reverse=True):
-                result = ctx.execute(tc)
-                self._fails[tc] = self._fold(self._fails[tc], result.fails)
+                ctx.execute(tc)
+
+    @override
+    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+        for ti in test_infos:
+            self._fails[ti.case] = self._fold(self._fails[ti.case], ti.result.fails)
 
     @override
     def reset(self) -> None:

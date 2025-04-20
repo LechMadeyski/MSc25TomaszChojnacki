@@ -22,6 +22,11 @@ class RunContext:
     def inspect_code(self, test_case: TestCase) -> str:
         return self._test_infos[test_case].content
 
+    def prioritized_cases(self) -> list[TestCase]:
+        if len(self._executed) != len(self._test_infos):
+            raise ValueError
+        return self._executed
+
     def prioritized_infos(self) -> list[TestInfo]:
         if len(self._executed) != len(self._test_infos):
             raise ValueError
