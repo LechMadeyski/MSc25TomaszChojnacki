@@ -1,5 +1,5 @@
 from typing import override
-from ...datatypes import RunContext
+from ...datatypes import RunContext, TestInfo
 from ..approach import Approach
 
 
@@ -13,7 +13,7 @@ class PassthroughOrder(Approach):
             ctx.execute(case)
 
     @override
-    def on_static_feedback(self, test_infos: list[RunContext]) -> None:
+    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
         self._target.on_static_feedback(test_infos)
 
     @override

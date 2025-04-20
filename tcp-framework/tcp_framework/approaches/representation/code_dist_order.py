@@ -41,4 +41,8 @@ class CodeDistOrder(Approach):
             )
             prioritized.add(found)
             queue.remove(found)
-            local_searches = self._fail_adapt if (self._fail_adapt > 0 and ctx.execute(found).fails > 0) else max(local_searches - 1, 0)
+            local_searches = (
+                self._fail_adapt
+                if (self._fail_adapt > 0 and ctx.execute(found).fails > 0)
+                else max(local_searches - 1, 0)
+            )
