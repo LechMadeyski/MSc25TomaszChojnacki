@@ -39,4 +39,7 @@ if __name__ == "__main__":
     ]
 
     for dataset in datasets:
+        dataset.describe()
+
+    for dataset in datasets:
         evaluate(APPROACHES, dataset, debug=1)

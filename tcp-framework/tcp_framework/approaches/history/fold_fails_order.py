@@ -1,6 +1,7 @@
 from collections import defaultdict
 from math import inf
-from typing import Callable, Literal, override
+from random import Random
+from typing import Callable, Literal, Optional, override
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase
 
@@ -8,19 +9,33 @@ type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 
 
 class FoldFailsOrder(Approach):
-    def __init__(self, folder: FailFolder = ("dfe", 0.8)) -> None:
+    def __init__(self, folder: FailFolder = ("dfe", 0.8), seed: Optional[int] = 0) -> None:
         initial, self._fold = self._select_folder(folder)
         self._fails: defaultdict[TestCase, float] = defaultdict(lambda: initial)
+        self._seed = seed
+        self._rng = Random(seed)
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        for tc in sorted(ctx.test_cases, key=lambda tc: self._fails[tc], reverse=True):
-            result = ctx.execute(tc)
-            self._fails[tc] = self._fold(self._fails[tc], result.fails)
+        if self._seed is not None:
+            queue = ctx.test_cases.copy()
+            while queue:
+                weights = [self._fails[tc] for tc in queue]
+                if sum(weights) == 0.0:
+                    weights = [1.0] * len(queue)
+                [tc] = self._rng.choices(queue, weights)
+                queue.remove(tc)
+                result = ctx.execute(tc)
+                self._fails[tc] = self._fold(self._fails[tc], result.fails)
+        else:
+            for tc in sorted(ctx.test_cases, key=lambda tc: self._fails[tc], reverse=True):
+                result = ctx.execute(tc)
+                self._fails[tc] = self._fold(self._fails[tc], result.fails)
 
     @override
     def reset(self) -> None:
         self._fails.clear()
+        self._rng.seed(self._seed)
 
     @classmethod
     def _select_folder(cls, folder: FailFolder) -> tuple[float, Callable[[float, int], float]]:
