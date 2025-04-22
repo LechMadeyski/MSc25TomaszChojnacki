@@ -5,6 +5,12 @@ from ..approach import Approach
 
 
 class BordaMixedOrder(Approach):
+    """
+    Proposed.
+    Similar: https://doi.org/10.18293/SEKE2022-148
+    Similar: https://doi.org/10.1109/TR.2022.3205483
+    """
+
     def __init__(self, targets: list[Approach], weights: Optional[list[float]] = None) -> None:
         self._targets = targets
         weights = weights if weights is not None else [1.0] * len(targets)
@@ -12,7 +18,7 @@ class BordaMixedOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        queues = [target.get_dry_static_ordering(ctx) for target in self._targets]
+        queues = [target.get_dry_ordering(ctx) for target in self._targets]
 
         borda: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
         for qi, queue in enumerate(queues):

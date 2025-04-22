@@ -9,6 +9,10 @@ type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 
 
 class FoldFailsOrder(Approach):
+    """
+    Original: https://doi.org/10.1109/ICSE.2002.1007961
+    """
+
     def __init__(self, folder: FailFolder = ("dfe", 0.8), seed: Optional[int] = 0) -> None:
         initial, self._fold = self._select_folder(folder)
         self._fails: defaultdict[TestCase, float] = defaultdict(lambda: initial)

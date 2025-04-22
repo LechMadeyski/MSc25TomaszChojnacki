@@ -8,6 +8,11 @@ from .vectorizers import CodeVectorizer
 
 
 class CodeDistOrder(Approach):
+    """
+    Proposed.
+    Similar: https://doi.org/10.1007/s10515-011-0093-0
+    """
+
     def __init__(
         self,
         vectorizer: CodeVectorizer,

@@ -1,6 +1,5 @@
 from .baseline import BaseOrder as BaseOrder, RandomOrder as RandomOrder
 from .combinator import (
-    PassthroughOrder as PassthroughOrder,
     BordaMixedOrder as BordaMixedOrder,
     RandomMixedOrder as RandomMixedOrder,
     RepresentationGuidedOrder as RepresentationGuidedOrder,

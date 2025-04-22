@@ -1,11 +1,9 @@
 from pathlib import Path
 from tcp_framework import (
     evaluate,
-    Approach,
     Dataset,
-    RandomOrder,
-    FoldFailsOrder,
 )
+from tcp_framework.approaches import Approach, RandomOrder, FoldFailsOrder
 
 REPOS = [
     "LittleProxy",

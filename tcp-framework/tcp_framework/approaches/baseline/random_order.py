@@ -5,6 +5,10 @@ from ..approach import Approach
 
 
 class RandomOrder(Approach):
+    """
+    Original: https://doi.org/10.1109/ICSM.1999.792604
+    """
+
     def __init__(self, seed: int = 0) -> None:
         self._seed = seed
         self._rng = Random(seed)

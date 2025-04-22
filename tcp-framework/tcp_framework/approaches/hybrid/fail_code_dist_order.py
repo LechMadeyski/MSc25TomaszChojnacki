@@ -7,6 +7,10 @@ from ..representation import GroupAgg, MinAgg, VectorDist, EuclidDist, CodeVecto
 
 
 class FailCodeDistOrder(Approach):
+    """
+    Proposed.
+    """
+
     def __init__(
         self,
         vectorizer: CodeVectorizer,

@@ -7,7 +7,7 @@ class Approach(ABC):
     def prioritize(self, ctx: RunContext) -> None:
         raise NotImplementedError
 
-    def get_dry_static_ordering(self, ctx: RunContext) -> list[TestCase]:
+    def get_dry_ordering(self, ctx: RunContext) -> list[TestCase]:
         forked_ctx = ctx.fork()
         self.prioritize(forked_ctx)
         return forked_ctx.prioritized_cases()

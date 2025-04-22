@@ -5,6 +5,10 @@ from ..approach import Approach
 
 
 class RepresentationGuidedOrder(Approach):
+    """
+    Proposed.
+    """
+
     def __init__(
         self,
         target: Approach,
@@ -21,7 +25,7 @@ class RepresentationGuidedOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        queue = self._target.get_dry_static_ordering(ctx)
+        queue = self._target.get_dry_ordering(ctx)
         distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
         tc = queue.pop(0)
         ready = {tc}
