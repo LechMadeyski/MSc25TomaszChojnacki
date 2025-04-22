@@ -21,22 +21,22 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
 
     apfds: list[list[float]] = [[] for _ in approaches]
 
-    runs = dataset.runs(debug=debug > 1)
+    cycles = dataset.cycles(debug=debug > 1)
 
-    for run_id, test_infos in tqdm(runs, desc="evaluate", leave=False, disable=(debug != 1)):
-        gather_metrics = len(test_infos) >= 5 and sum(ti.result.fails for ti in test_infos) > 0  # Bagherzadeh 2021
+    for cycle in tqdm(cycles, desc="evaluate", leave=False, disable=(debug != 1)):
+        gather_metrics = len(cycle.tests) >= 5 and sum(ti.result.fails for ti in cycle.tests) > 0  # Bagherzadeh 2021
 
         if debug > 1 and gather_metrics:
-            print(f"Run ID: {run_id}")
+            print(f"Job ID: {cycle.job_id}")
 
         for ai, approach in enumerate(approaches):
-            ctx = RunContext(test_infos)
+            ctx = RunContext(cycle.tests)
             approach.prioritize(ctx)
-            result = ctx.prioritized_infos()
-            approach.on_static_feedback(result)
+            ordering = ctx.prioritized_infos()
+            approach.on_static_feedback(ordering)
 
             if gather_metrics:
-                apfds[ai].append(_metric_apfd([ti.result.fails for ti in result]))
+                apfds[ai].append(_metric_apfd([ti.result.fails for ti in ordering]))
 
         if debug > 1 and gather_metrics:
             for ai, approach in enumerate(approaches):

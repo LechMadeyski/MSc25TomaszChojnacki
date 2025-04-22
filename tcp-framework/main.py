@@ -35,10 +35,10 @@ APPROACHES: list[Approach] = [
 ]
 
 if __name__ == "__main__":
-    rc_map = Dataset.preload_rc_map(Path("./datasets/tr_all_built_commits.csv"))
+    jc_map = Dataset.preload_jc_map(Path("./datasets/tr_all_built_commits.csv"))
 
     datasets = [
-        Dataset(runs_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), rc_map=rc_map)
+        Dataset(cycles_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), jc_map=jc_map)
         for repo in REPOS
     ]
 
