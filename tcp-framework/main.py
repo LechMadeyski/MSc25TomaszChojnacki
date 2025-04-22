@@ -5,10 +5,7 @@ from tcp_framework import (
     Dataset,
     RandomOrder,
     FoldFailsOrder,
-    FailCodeDistOrder,
-    PassthroughOrder,
 )
-from tcp_framework.approaches.representation import StVectorizer
 
 REPOS = [
     "LittleProxy",
@@ -28,8 +25,6 @@ REPOS = [
 APPROACHES: list[Approach] = [
     RandomOrder(),
     FoldFailsOrder(),
-    PassthroughOrder(FoldFailsOrder()),
-    FailCodeDistOrder(StVectorizer()),
 ]
 
 if __name__ == "__main__":

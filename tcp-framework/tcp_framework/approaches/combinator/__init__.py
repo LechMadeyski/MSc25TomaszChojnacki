@@ -1,1 +1,4 @@
+from .borda_mixed_order import BordaMixedOrder as BordaMixedOrder
 from .passthrough_order import PassthroughOrder as PassthroughOrder
+from .random_mixed_order import RandomMixedOrder as RandomMixedOrder
+from .representation_guided_order import RepresentationGuidedOrder as RepresentationGuidedOrder

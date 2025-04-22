@@ -11,8 +11,7 @@ def _metric_apfd(fails: list[int]) -> float:
         return float("nan")
     s = 0
     for i, f in enumerate(fails):
-        for _ in range(f):
-            s += i + 1
+        s += (i + 1) * f
     return 1 - (s / (n * m)) + (1 / (2 * n))
 
 
@@ -25,7 +24,7 @@ def evaluate(approaches: list[Approach], dataset: Dataset, *, debug: int = 0) ->
     runs = dataset.runs(debug=debug > 1)
 
     for run_id, test_infos in tqdm(runs, desc="evaluate", leave=False, disable=(debug != 1)):
-        gather_metrics = sum(ti.result.fails for ti in test_infos) > 0
+        gather_metrics = len(test_infos) >= 5 and sum(ti.result.fails for ti in test_infos) > 0  # Bagherzadeh 2021
 
         if debug > 1 and gather_metrics:
             print(f"Run ID: {run_id}")

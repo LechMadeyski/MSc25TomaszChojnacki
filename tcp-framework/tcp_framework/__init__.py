@@ -8,6 +8,9 @@ from .approaches import (
     CodeDistOrder as CodeDistOrder,
     TestLocOrder as TestLocOrder,
     PassthroughOrder as PassthroughOrder,
+    BordaMixedOrder as BordaMixedOrder,
+    RandomMixedOrder as RandomMixedOrder,
+    RepresentationGuidedOrder as RepresentationGuidedOrder,
     Approach as Approach,
 )
 from .evaluate import evaluate as evaluate
