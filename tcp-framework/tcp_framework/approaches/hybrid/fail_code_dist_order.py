@@ -3,7 +3,7 @@ from typing import DefaultDict, override
 from itertools import groupby
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
-from ..representation import GroupAgg, MinAgg, VectorDist, EuclidDist, CodeVectorizer, LazyCodeDistMap
+from ..representation import GroupAgg, VectorDist, CodeVectorizer, LazyCodeDistMap
 
 
 class FailCodeDistOrder(Approach):
@@ -14,8 +14,8 @@ class FailCodeDistOrder(Approach):
     def __init__(
         self,
         vectorizer: CodeVectorizer,
-        distance: VectorDist = EuclidDist(),
-        aggregation: GroupAgg = MinAgg(),
+        distance: VectorDist = VectorDist.euclid,
+        aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
         self._total_fails: DefaultDict[TestCase, int] = defaultdict(lambda: 0)
         self._vectorizer = vectorizer

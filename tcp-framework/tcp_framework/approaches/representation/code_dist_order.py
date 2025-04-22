@@ -1,9 +1,7 @@
 from typing import override
 from ...datatypes import RunContext
 from ..approach import Approach
-from .lazy_code_dist_map import LazyCodeDistMap
-from .aggregations import GroupAgg
-from .distances import VectorDist
+from .utils import LazyCodeDistMap, GroupAgg, VectorDist
 from .vectorizers import CodeVectorizer
 
 

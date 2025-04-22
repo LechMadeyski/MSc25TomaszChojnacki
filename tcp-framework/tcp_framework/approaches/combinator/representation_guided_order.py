@@ -1,6 +1,6 @@
 from typing import override
 from ...datatypes import RunContext, TestInfo
-from ..representation import LazyCodeDistMap, CodeVectorizer, GroupAgg, MinAgg, VectorDist, EuclidDist
+from ..representation import LazyCodeDistMap, CodeVectorizer, GroupAgg, VectorDist
 from ..approach import Approach
 
 
@@ -13,8 +13,8 @@ class RepresentationGuidedOrder(Approach):
         self,
         target: Approach,
         vectorizer: CodeVectorizer,
-        distance: VectorDist = EuclidDist(),
-        aggregation: GroupAgg = MinAgg(),
+        distance: VectorDist = VectorDist.euclid,
+        aggregation: GroupAgg = GroupAgg.min,
         count: int = 2,
     ) -> None:
         self._target = target

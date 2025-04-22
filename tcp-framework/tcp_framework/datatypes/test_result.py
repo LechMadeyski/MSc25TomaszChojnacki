@@ -5,13 +5,11 @@ from typing import override
 class TestResult(ABC):
     @property
     @abstractmethod
-    def fails(self) -> int:
-        raise NotImplementedError
+    def fails(self) -> int: ...
 
     @property
     @abstractmethod
-    def time_s(self) -> float:
-        raise NotImplementedError
+    def time_s(self) -> float: ...
 
     def hide(self) -> "HiddenTestResult":
         return HiddenTestResult()
