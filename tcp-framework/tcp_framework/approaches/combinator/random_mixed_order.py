@@ -1,38 +1,32 @@
 from random import Random
 from typing import Optional, override
-from ...datatypes import RunContext, TestInfo
+from ...datatypes import TestCase
 from ..approach import Approach
+from .mixed_order import MixedOrder
 
 
-class RandomMixedOrder(Approach):
+class RandomMixedOrder(MixedOrder):
     """
     Proposed.
     """
 
     def __init__(self, targets: list[Approach], weights: Optional[list[float]] = None, seed: int = 0) -> None:
-        self._targets = targets
-        weights = weights if weights is not None else [1.0] * len(targets)
-        self._weights = [w / sum(weights) for w in weights]
+        super().__init__(targets, weights)
         self._seed = seed
         self._rng = Random(seed)
 
     @override
-    def prioritize(self, ctx: RunContext) -> None:
-        queues = [target.get_dry_ordering(ctx) for target in self._targets]
-        for _ in range(len(ctx.test_cases)):
+    def merge_queues(self, queues: list[list[TestCase]]) -> list[TestCase]:
+        result: list[TestCase] = []
+        for _ in range(len(queues[0])):
             [i] = self._rng.choices(range(len(self._targets)), weights=self._weights)
             target = queues[i][0]
             for q in queues:
                 q.remove(target)
-            ctx.execute(target)
-
-    @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
-        for target in self._targets:
-            target.on_static_feedback(test_infos)
+            result.append(target)
+        return result
 
     @override
     def reset(self) -> None:
+        super().reset()
         self._rng.seed(self._seed)
-        for target in self._targets:
-            target.reset()

@@ -3,7 +3,14 @@ from tcp_framework import (
     evaluate,
     Dataset,
 )
-from tcp_framework.approaches import Approach, RandomOrder, FoldFailsOrder
+from tcp_framework.approaches import (
+    Approach,
+    RandomOrder,
+    FoldFailsOrder,
+    TestLocOrder,
+    RandomMixedOrder,
+    BordaMixedOrder,
+)
 
 REPOS = [
     "LittleProxy",
@@ -23,6 +30,8 @@ REPOS = [
 APPROACHES: list[Approach] = [
     RandomOrder(),
     FoldFailsOrder(),
+    RandomMixedOrder([FoldFailsOrder(), TestLocOrder()]),
+    BordaMixedOrder([FoldFailsOrder(), TestLocOrder()]),
 ]
 
 if __name__ == "__main__":
