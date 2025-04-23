@@ -9,7 +9,6 @@ from tcp_framework.approaches import (
     FoldFailsOrder,
     TestLocOrder,
     RandomMixedOrder,
-    BordaMixedOrder,
 )
 
 REPOS = [
@@ -31,7 +30,6 @@ APPROACHES: list[Approach] = [
     RandomOrder(),
     FoldFailsOrder(),
     RandomMixedOrder([FoldFailsOrder(), TestLocOrder()]),
-    BordaMixedOrder([FoldFailsOrder(), TestLocOrder()]),
 ]
 
 if __name__ == "__main__":
@@ -46,4 +44,4 @@ if __name__ == "__main__":
     #     dataset.describe()
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, debug=1)
+        evaluate(APPROACHES, dataset, ["rAPFD", "rAPFDc"], debug=1)
