@@ -44,4 +44,4 @@ if __name__ == "__main__":
     #     dataset.describe()
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, ["rAPFD", "rAPFDc"], debug=1)
+        evaluate(APPROACHES, dataset, ["rAPFD", "rAPFDc", "NRPA", "NTR"], debug=1)

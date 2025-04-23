@@ -5,7 +5,8 @@ from .datatypes import RunContext
 from .dataset import Dataset
 from .metric_calc import MetricCalc
 
-type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc"]
+type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR"]
+
 
 def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trailer: str = "") -> None:
     for mi, metric in enumerate(metrics):
@@ -19,6 +20,14 @@ def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trai
                     print(f"C{ci}: {calc.avg_apfd_c:.3f}   ", end="")
                 case "rAPFDc":
                     print(f"c{ci}: {calc.avg_r_apfd_c:.3f}   ", end="")
+                case "RPA":
+                    print(f"R{ci}: {calc.avg_rpa:.3f}   ", end="")
+                case "NRPA":
+                    print(f"r{ci}: {calc.avg_nrpa:.3f}   ", end="")
+                case "NTR":
+                    print(f"N{ci}: {calc.avg_ntr:.3f}   ", end="")
+                case _:
+                    raise ValueError
         if trailer and mi == 0:
             print(f"   {trailer}")
         else:
@@ -29,7 +38,7 @@ def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[Support
     for approach in approaches:
         approach.reset()
 
-    calcs = [MetricCalc(min_cases=5) for _ in approaches]
+    calcs = [MetricCalc(min_cases=6) for _ in approaches]
 
     cycles = dataset.cycles(debug=debug > 1)
 
@@ -42,7 +51,7 @@ def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[Support
             calcs[ai].include(ordering)
 
         if debug > 1:
-            _print_metrics(calcs, metrics, trailer=cycle.name)
+            _print_metrics(calcs, metrics, trailer=f"#{cycle.job_id}")
 
     if debug > 0:
         _print_metrics(calcs, metrics, trailer=dataset.name)
