@@ -89,7 +89,7 @@ class Dataset:
                         TestInfo(
                             case=TestCase(tc["name"]),
                             content=tc["content"],
-                            result=VisibleTestResult(fails=tc["fails"], time_s=tc["time_s"]),
+                            result=VisibleTestResult(fails=tc["fails"], time_s=max(tc["time_s"], 1e-9)),
                         )
                         for tc in test_cases
                     ],

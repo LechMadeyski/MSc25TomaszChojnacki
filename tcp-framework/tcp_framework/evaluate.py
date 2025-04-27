@@ -13,28 +13,29 @@ def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trai
         for ci, calc in enumerate(calcs, start=1):
             match metric:
                 case "APFD":
-                    print(f"A{ci}: {calc.avg_apfd:.3f}   ", end="")
+                    print(f"A{ci}: {calc.apfd_avg:.3f}   ", end="")
                 case "rAPFD":
-                    print(f"a{ci}: {calc.avg_r_apfd:.3f}   ", end="")
+                    print(f"a{ci}: {calc.r_apfd_avg:.3f}   ", end="")
                 case "APFDc":
-                    print(f"C{ci}: {calc.avg_apfd_c:.3f}   ", end="")
+                    print(f"C{ci}: {calc.apfd_c_avg:.3f}   ", end="")
                 case "rAPFDc":
-                    print(f"c{ci}: {calc.avg_r_apfd_c:.3f}   ", end="")
+                    print(f"c{ci}: {calc.r_apfd_c_avg:.3f}   ", end="")
                 case "RPA":
-                    print(f"R{ci}: {calc.avg_rpa:.3f}   ", end="")
+                    print(f"R{ci}: {calc.rpa_avg:.3f}   ", end="")
                 case "NRPA":
-                    print(f"r{ci}: {calc.avg_nrpa:.3f}   ", end="")
+                    print(f"r{ci}: {calc.nrpa_avg:.3f}   ", end="")
                 case "NTR":
-                    print(f"N{ci}: {calc.avg_ntr:.3f}   ", end="")
+                    print(f"N{ci}: {calc.ntr_avg:.3f}   ", end="")
                 case _:
                     raise ValueError
-        if trailer and mi == 0:
-            print(f"   {trailer}")
+        if mi == 0:
+            trailer = f"   {trailer} [{calc.failed_cycles}]" if trailer else f"   [{calc.failed_cycles}]"
+            print(trailer)
         else:
             print()
 
 
-def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[SupportedMetric], *, debug: int = 0) -> None:
+def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[SupportedMetric], *, debug: int = 0) -> list[MetricCalc]:
     for approach in approaches:
         approach.reset()
 
@@ -55,3 +56,5 @@ def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[Support
 
     if debug > 0:
         _print_metrics(calcs, metrics, trailer=dataset.name)
+
+    return calcs

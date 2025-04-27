@@ -6,9 +6,8 @@ from tcp_framework import (
 from tcp_framework.approaches import (
     Approach,
     RandomOrder,
+    FailDensityOrder,
     FoldFailsOrder,
-    TestLocOrder,
-    RandomMixedOrder,
 )
 
 REPOS = [
@@ -29,7 +28,7 @@ REPOS = [
 APPROACHES: list[Approach] = [
     RandomOrder(),
     FoldFailsOrder(),
-    RandomMixedOrder([FoldFailsOrder(), TestLocOrder()]),
+    FailDensityOrder(),
 ]
 
 if __name__ == "__main__":
@@ -44,4 +43,4 @@ if __name__ == "__main__":
     #     dataset.describe()
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, ["rAPFD", "rAPFDc", "NRPA", "NTR"], debug=1)
+        evaluate(APPROACHES, dataset, ["rAPFDc"], debug=1)

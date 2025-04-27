@@ -1,4 +1,7 @@
+import numpy as np
 from .datatypes import TestInfo, TestResult
+
+EPSILON = 1e-6
 
 
 class MetricCalc:
@@ -26,7 +29,7 @@ class MetricCalc:
         n = len(results)
         m = sum(tr.fails for tr in results)
         denom = m * sum(tr.time_s for tr in results)
-        if denom == 0:
+        if denom < EPSILON:
             return float("nan")
 
         def tf(f_i: int) -> int:
@@ -76,7 +79,7 @@ class MetricCalc:
         return nom / (k * k * (k + 1) / 2)
 
     @staticmethod
-    def rpa_m(*, k: int) -> float:
+    def _rpa_m(*, k: int) -> float:
         nom = 0.0
         for i in range(1, k):
             nom += (k - i) * (k - i + 1)
@@ -84,7 +87,7 @@ class MetricCalc:
 
     @staticmethod
     def nrpa(results: list[TestResult]) -> float:
-        return MetricCalc.rpa(results) / MetricCalc.rpa_m(k=len(results))
+        return MetricCalc.rpa(results) / MetricCalc._rpa_m(k=len(results))
 
     @staticmethod
     def ntr(cycles: list[list[TestResult]]) -> float:
@@ -117,6 +120,12 @@ class MetricCalc:
             return float("nan")
         return sum(values) / len(values)
 
+    @staticmethod
+    def _trend(values: list[float]) -> float:
+        x = np.linspace(0.0, 1.0, len(values))
+        m, _ = np.polyfit(x, values, 1)
+        return m
+
     def __init__(self, min_cases: int = 1) -> None:
         self._min_cases = min_cases  # Bagherzadeh 2021
         self._all_apfd: list[float] = []
@@ -147,29 +156,33 @@ class MetricCalc:
         self._ntr_denom_sum += self._ntr_denom(results)
 
     @property
-    def avg_apfd(self) -> float:
+    def failed_cycles(self) -> int:
+        return len(self._all_apfd)
+
+    @property
+    def apfd_avg(self) -> float:
         return self._avg(self._all_apfd)
 
     @property
-    def avg_r_apfd(self) -> float:
+    def r_apfd_avg(self) -> float:
         return self._avg(self._all_r_apfd)
 
     @property
-    def avg_apfd_c(self) -> float:
+    def apfd_c_avg(self) -> float:
         return self._avg(self._all_apfd_c)
 
     @property
-    def avg_r_apfd_c(self) -> float:
+    def r_apfd_c_avg(self) -> float:
         return self._avg(self._all_r_apfd_c)
 
     @property
-    def avg_rpa(self) -> float:
+    def rpa_avg(self) -> float:
         return self._avg(self._all_rpa)
 
     @property
-    def avg_nrpa(self) -> float:
+    def nrpa_avg(self) -> float:
         return self._avg(self._all_nrpa)
 
     @property
-    def avg_ntr(self) -> float:
+    def ntr_avg(self) -> float:
         return self._ntr_nom_sum / self._ntr_denom_sum if self._ntr_denom_sum > 0 else float("nan")

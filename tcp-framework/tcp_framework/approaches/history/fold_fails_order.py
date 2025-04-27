@@ -8,6 +8,9 @@ from ...datatypes import RunContext, TestCase, TestInfo
 type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 
 
+EPSILON = 1e-6
+
+
 class FoldFailsOrder(Approach):
     """
     Original: https://doi.org/10.1109/ICSE.2002.1007961
@@ -25,7 +28,7 @@ class FoldFailsOrder(Approach):
             queue = ctx.test_cases.copy()
             while queue:
                 weights = [self._fails[tc] for tc in queue]
-                if sum(weights) == 0.0:
+                if sum(weights) < EPSILON:
                     weights = [1.0] * len(queue)
                 [tc] = self._rng.choices(queue, weights)
                 queue.remove(tc)

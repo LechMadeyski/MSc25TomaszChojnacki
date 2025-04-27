@@ -5,7 +5,7 @@ from ..approach import Approach
 
 class TestLocOrder(Approach):
     """
-    Proposed.
+    Proposed. ?
     """
 
     def __init__(self, skip_blank: bool = True) -> None:
