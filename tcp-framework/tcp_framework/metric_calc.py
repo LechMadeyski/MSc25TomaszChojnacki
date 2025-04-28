@@ -117,7 +117,7 @@ class MetricCalc:
     @staticmethod
     def _atr_cycle_time(results: list[TestResult], *, build_time_s: float, tcp_time_s: float) -> float:
         first_i = next((i for i, tr in enumerate(results) if tr.fails > 0), len(results) - 1)
-        return max(build_time_s, tcp_time_s) + sum(tr.time_s for tr in results[: first_i + 1])
+        return max(tcp_time_s - build_time_s, 0.0) + sum(tr.time_s for tr in results[: first_i + 1])
 
     @staticmethod
     def _avg(values: list[float]) -> float:
