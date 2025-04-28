@@ -1,7 +1,9 @@
+from contextlib import contextmanager
 import csv
+import sys
 import gzip
 import pickle
-from typing import Any, Optional
+from typing import Any, Generator, Optional, NamedTuple
 import os
 from pathlib import Path
 import git
@@ -9,21 +11,82 @@ import pandas as pd
 from tqdm import tqdm
 from .datatypes import Cycle, TestCase, TestInfo, VisibleTestResult
 
+_RTP_TORRENT_PROJECTS = [
+    "Achilles",
+    "DSpace",
+    "HikariCP",
+    "LittleProxy",
+    "buck",
+    "cloudify",
+    "deeplearning4j",
+    "dynjs",
+    "graylog2-server",
+    "jOOQ",
+    "jade4j",
+    "jcabi-github",
+    "jetty.project",
+    "jsprit",
+    "okhttp",
+    "optiq",
+    "sling",
+    "sonarqube",
+    "titan",
+    "wicket-bootstrap",
+]
+
+
+class CycleMapEntry(NamedTuple):
+    commit_id: str
+    cycle_time_s: Optional[float]
+
+
+@contextmanager
+def _omit_csv_limit() -> Generator[None, Any, None]:
+    original_limit = csv.field_size_limit()
+    try:
+        csv.field_size_limit(sys.maxsize // 10)
+        yield
+    finally:
+        csv.field_size_limit(original_limit)
+
 
 class Dataset:
     def __init__(
-        self, *, cycles_path: Path, repo_path: Path, jc_map: dict[str, str] | Path, cached: bool = True
+        self, *, cycles_path: Path, repo_path: Path, cycle_map: dict[str, CycleMapEntry] | Path, cached: bool = True
     ) -> None:
         self._cycles_path = cycles_path
         self._repo_path = repo_path
-        self._jc_map = jc_map
+        self._cycle_map = cycle_map
         self._cached = cached
 
     @classmethod
-    def preload_jc_map(cls, jc_map_path: Path) -> dict[str, str]:
-        with open(jc_map_path) as f:
+    def preload_cycle_map(cls, cycle_map_path: Path, *, debug: bool = False) -> dict[str, CycleMapEntry]:
+        with _omit_csv_limit(), open(cycle_map_path) as f:
             reader = csv.reader(f)
-            return {job_id: commit_id for job_id, commit_id in reader}
+            first_row = next(reader)
+            result: dict[str, CycleMapEntry] = {}
+            if len(first_row) == 2:  # tr_all_built_commits.csv
+                job_id_idx = first_row.index("tr_job_id")
+                commit_id_idx = first_row.index("git_commit_id")
+                for row in tqdm(reader, desc="preload_cycle_map", leave=False, disable=not debug):
+                    if row[job_id_idx] in result:
+                        continue
+                    result[row[job_id_idx]] = CycleMapEntry(commit_id=row[commit_id_idx], cycle_time_s=None)
+            elif len(first_row) == 62:  # travistorrent_8_2_2017.csv
+                job_id_idx = first_row.index("tr_job_id")
+                commit_id_idx = first_row.index("git_trigger_commit")
+                cycle_time_s_idx = first_row.index("tr_duration")
+                project_name_idx = first_row.index("gh_project_name")
+                for row in tqdm(reader, desc="preload_cycle_map", leave=False, disable=not debug):
+                    if row[project_name_idx].split("/")[1] not in _RTP_TORRENT_PROJECTS:
+                        continue
+                    result[row[job_id_idx]] = CycleMapEntry(
+                        commit_id=row[commit_id_idx],
+                        cycle_time_s=float(row[cycle_time_s_idx]) if row[cycle_time_s_idx] != "NA" else None,
+                    )
+            else:
+                raise ValueError(f"unsupported cycle map file format: {cycle_map_path}")
+            return result
 
     @property
     def name(self) -> str:
@@ -32,10 +95,13 @@ class Dataset:
     def describe(self) -> None:
         data = self.cycles(debug=True)
         cycles = len(data)
-        fail = sum(1 for c in data if any(ti.result.fails > 0 for ti in c.tests)) / cycles
+        fail = sum(1 for c in data if c.is_failed) / cycles
         tests = sum(len(c.tests) for c in data) / cycles
+        total_time_h = round(sum(c.cycle_time_s for c in data) / 3600)
         name = self._cycles_path.stem
-        print(f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests")
+        print(
+            f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests, {total_time_h: >6} hours"
+        )
 
     def cycles(self, *, debug: bool = False) -> list[Cycle]:
         if (data := self._load_pickle()) is not None:
@@ -55,7 +121,7 @@ class Dataset:
             .to_dict()
         )
 
-        jc_map = self._jc_map if isinstance(self._jc_map, dict) else self.preload_jc_map(self._jc_map)
+        cycle_map = self._cycle_map if isinstance(self._cycle_map, dict) else self.preload_cycle_map(self._cycle_map)
 
         repo = git.Repo(self._repo_path)
 
@@ -64,7 +130,7 @@ class Dataset:
         invalid_commits: list[str] = []
         invalid_files: list[tuple[str, str]] = []
         for job_id, test_cases in tqdm(jobs_dict.items(), desc="cycles", leave=False, disable=not debug):
-            commit_id = jc_map.get(job_id)
+            commit_id = cycle_map[job_id].commit_id if job_id in cycle_map else None
             if commit_id is None:
                 invalid_jobs.append(job_id)
                 continue
@@ -93,22 +159,17 @@ class Dataset:
                         )
                         for tc in test_cases
                     ],
+                    cycle_time_s=cycle_map[job_id].cycle_time_s,
                 )
             )
 
         if debug:
             if invalid_jobs:
-                print(
-                    f"  INVALID JOB [{len(invalid_jobs)}]: {invalid_jobs[:5]}{'...' if len(invalid_jobs) > 5 else ''}"
-                )
+                print(f"  INVALID JOB [{len(invalid_jobs)}], e.g. {invalid_jobs[0]}")
             if invalid_commits:
-                print(
-                    f"  INVALID COMMIT [{len(invalid_commits)}]: {invalid_commits[:5]}{'...' if len(invalid_commits) > 5 else ''}"
-                )
+                print(f"  INVALID COMMIT [{len(invalid_commits)}], e.g. {invalid_commits[0]}")
             if invalid_files:
-                print(
-                    f"  INVALID FILE [{len(invalid_files)}]: {invalid_files[:5]}{'...' if len(invalid_files) > 5 else ''}"
-                )
+                print(f"  INVALID FILE [{len(invalid_files)}], e.g. {invalid_files[0]}")
 
         self._save_pickle(result)
         return result

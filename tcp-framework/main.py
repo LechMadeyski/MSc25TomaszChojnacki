@@ -32,10 +32,10 @@ APPROACHES: list[Approach] = [
 ]
 
 if __name__ == "__main__":
-    jc_map = Dataset.preload_jc_map(Path("./datasets/tr_all_built_commits.csv"))
+    cycle_map = Dataset.preload_cycle_map(Path("./datasets/travistorrent_8_2_2017.csv"), debug=True)
 
     datasets = [
-        Dataset(cycles_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), jc_map=jc_map)
+        Dataset(cycles_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), cycle_map=cycle_map)
         for repo in REPOS
     ]
 

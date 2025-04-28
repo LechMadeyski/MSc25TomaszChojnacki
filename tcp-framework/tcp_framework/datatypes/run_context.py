@@ -15,7 +15,7 @@ class RunContext:
 
     def execute(self, test_case: TestCase) -> TestResult:
         if test_case in self._executed or test_case not in self._test_infos:
-            raise ValueError
+            raise ValueError("test case was already executed or does not belong to this context")
         self._executed.append(test_case)
         return self._test_infos[test_case].result
 
@@ -24,12 +24,12 @@ class RunContext:
 
     def prioritized_cases(self) -> list[TestCase]:
         if len(self._executed) != len(self._test_infos):
-            raise ValueError
+            raise ValueError("not all test cases were executed")
         return self._executed
 
     def prioritized_infos(self) -> list[TestInfo]:
         if len(self._executed) != len(self._test_infos):
-            raise ValueError
+            raise ValueError("not all test cases were executed")
         return [self._test_infos[tc] for tc in self._executed]
 
     def fork(self) -> "ForkedRunContext":

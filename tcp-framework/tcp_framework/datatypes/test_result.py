@@ -35,9 +35,9 @@ class HiddenTestResult(TestResult):
     @override
     @property
     def fails(self) -> int:
-        raise ValueError
+        raise ValueError("hidden results cannot be leaked")
 
     @override
     @property
     def time_s(self) -> float:
-        raise ValueError
+        raise ValueError("hidden results cannot be leaked")

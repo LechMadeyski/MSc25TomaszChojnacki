@@ -58,4 +58,4 @@ class FoldFailsOrder(Approach):
             case "recent":
                 return -inf, lambda acc, value: 0 if value > 0 else acc - 1
             case _:
-                raise ValueError
+                raise ValueError(f"unsupported folder: {folder}")

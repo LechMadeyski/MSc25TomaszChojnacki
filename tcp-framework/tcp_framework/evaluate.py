@@ -27,7 +27,7 @@ def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trai
                 case "NTR":
                     print(f"N{ci}: {calc.ntr_avg:.3f}   ", end="")
                 case _:
-                    raise ValueError
+                    raise ValueError(f"unsupported metric: {metric}")
         if mi == 0:
             trailer = f"   {trailer} [{calc.failed_cycles}]" if trailer else f"   [{calc.failed_cycles}]"
             print(trailer)
@@ -35,7 +35,9 @@ def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trai
             print()
 
 
-def evaluate(approaches: list[Approach], dataset: Dataset, metrics: list[SupportedMetric], *, debug: int = 0) -> list[MetricCalc]:
+def evaluate(
+    approaches: list[Approach], dataset: Dataset, metrics: list[SupportedMetric], *, debug: int = 0
+) -> list[MetricCalc]:
     for approach in approaches:
         approach.reset()
 

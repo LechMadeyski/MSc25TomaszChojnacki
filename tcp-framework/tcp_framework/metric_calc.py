@@ -38,7 +38,7 @@ class MetricCalc:
                 count += tr.fails
                 if count >= f_i:
                     return c_i
-            raise ValueError
+            raise ValueError("unreachable reached in apfd_c")
 
         nom = 0.0
         for j in range(1, m + 1):
