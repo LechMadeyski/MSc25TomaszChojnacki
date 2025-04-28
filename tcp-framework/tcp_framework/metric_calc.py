@@ -115,6 +115,11 @@ class MetricCalc:
         return sum(tr.time_s for tr in results)
 
     @staticmethod
+    def _atr_cycle_time(results: list[TestResult], *, build_time_s: float, tcp_time_s: float) -> float:
+        first_i = next((i for i, tr in enumerate(results) if tr.fails > 0), len(results) - 1)
+        return max(build_time_s, tcp_time_s) + sum(tr.time_s for tr in results[: first_i + 1])
+
+    @staticmethod
     def _avg(values: list[float]) -> float:
         if not values:
             return float("nan")
@@ -136,24 +141,30 @@ class MetricCalc:
         self._all_nrpa: list[float] = []
         self._ntr_nom_sum = 0.0
         self._ntr_denom_sum = 0.0
+        self._atr_nom_sum = 0.0
+        self._atr_denom_sum = 0.0
 
-    def include(self, ordering: list[TestInfo]) -> None:
-        results = [ti.result for ti in ordering]
-        if len(results) < self._min_cases:
+    def include(self, *, ordered: list[TestInfo], base: list[TestInfo], build_time_s: float, tcp_time_s: float) -> None:
+        assert len(ordered) == len(base)
+        ordered_r = [ti.result for ti in ordered]
+        if len(ordered_r) < self._min_cases:
+            return None
+        base_r = [ti.result for ti in base]
+
+        self._all_rpa.append(self.rpa(ordered_r))
+        self._all_nrpa.append(self.nrpa(ordered_r))
+        self._atr_nom_sum += self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
+        self._atr_denom_sum += self._atr_cycle_time(base_r, build_time_s=build_time_s, tcp_time_s=0.0)
+
+        if not any(tr.fails > 0 for tr in ordered_r):
             return None
 
-        self._all_rpa.append(self.rpa(results))
-        self._all_nrpa.append(self.nrpa(results))
-
-        if not any(tr.fails > 0 for tr in results):
-            return None
-
-        self._all_apfd.append(self.apfd(results))
-        self._all_r_apfd.append(self.r_apfd(results))
-        self._all_apfd_c.append(self.apfd_c(results))
-        self._all_r_apfd_c.append(self.r_apfd_c(results))
-        self._ntr_nom_sum += self._ntr_nom(results)
-        self._ntr_denom_sum += self._ntr_denom(results)
+        self._all_apfd.append(self.apfd(ordered_r))
+        self._all_r_apfd.append(self.r_apfd(ordered_r))
+        self._all_apfd_c.append(self.apfd_c(ordered_r))
+        self._all_r_apfd_c.append(self.r_apfd_c(ordered_r))
+        self._ntr_nom_sum += self._ntr_nom(ordered_r)
+        self._ntr_denom_sum += self._ntr_denom(ordered_r)
 
     @property
     def failed_cycles(self) -> int:
@@ -184,5 +195,17 @@ class MetricCalc:
         return self._avg(self._all_nrpa)
 
     @property
-    def ntr_avg(self) -> float:
+    def ntr_val(self) -> float:
         return self._ntr_nom_sum / self._ntr_denom_sum if self._ntr_denom_sum > 0 else float("nan")
+
+    @property
+    def atr_val(self) -> float:
+        return 1 - (self._atr_nom_sum / self._atr_denom_sum) if self._atr_denom_sum > 0 else float("nan")
+
+    @property
+    def atr_algorithm_total_s(self) -> float:
+        return self._atr_nom_sum
+
+    @property
+    def atr_base_total_s(self) -> float:
+        return self._atr_denom_sum

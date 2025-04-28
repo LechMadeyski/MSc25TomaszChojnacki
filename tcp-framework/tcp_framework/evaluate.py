@@ -1,3 +1,4 @@
+import time
 from typing import Literal
 from tqdm import tqdm
 from .approaches import Approach
@@ -5,7 +6,7 @@ from .datatypes import RunContext
 from .dataset import Dataset
 from .metric_calc import MetricCalc
 
-type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR"]
+type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR", "ATR"]
 
 
 def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trailer: str = "") -> None:
@@ -25,7 +26,9 @@ def _print_metrics(calcs: list[MetricCalc], metrics: list[SupportedMetric], trai
                 case "NRPA":
                     print(f"r{ci}: {calc.nrpa_avg:.3f}   ", end="")
                 case "NTR":
-                    print(f"N{ci}: {calc.ntr_avg:.3f}   ", end="")
+                    print(f"N{ci}: {calc.ntr_val:.3f}   ", end="")
+                case "ATR":
+                    print(f"n{ci}: {calc.atr_val:+.3f}  ", end="")
                 case _:
                     raise ValueError(f"unsupported metric: {metric}")
         if mi == 0:
@@ -48,10 +51,14 @@ def evaluate(
     for cycle in tqdm(cycles, desc="evaluate", leave=False, disable=(debug != 1)):
         for ai, approach in enumerate(approaches):
             ctx = RunContext(cycle.tests)
+            start = time.monotonic()
             approach.prioritize(ctx)
+            end = time.monotonic()
             ordering = ctx.prioritized_infos()
             approach.on_static_feedback(ordering)
-            calcs[ai].include(ordering)
+            calcs[ai].include(
+                ordered=ordering, base=cycle.tests, build_time_s=cycle.build_time_s, tcp_time_s=end - start
+            )
 
         if debug > 1:
             _print_metrics(calcs, metrics, trailer=f"#{cycle.job_id}")
