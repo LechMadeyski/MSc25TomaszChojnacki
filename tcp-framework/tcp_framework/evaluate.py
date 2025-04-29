@@ -30,7 +30,7 @@ def _print_metrics(calcs: Sequence[MetricCalc], metrics: Sequence[SupportedMetri
                 case "NTR":
                     print(f"N{ci}: {calc.ntr_val:.3f}   ", end="")
                 case "ATR":
-                    print(f"n{ci}: {calc.atr_val:+.3f}  ", end="")
+                    print(f"n{ci}:{calc.atr_val:+.3f}   ", end="")
                 case _:
                     raise ValueError(f"unsupported metric: {metric}")
         if mi == 0:

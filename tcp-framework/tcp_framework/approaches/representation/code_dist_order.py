@@ -53,7 +53,5 @@ class CodeDistOrder(Approach):
             queue.remove(found)
             result = ctx.execute(found)
             local_searches = (
-                self._fail_adapt
-                if (self._fail_adapt > 0 and result.fails > 0)
-                else max(local_searches - 1, 0)
+                self._fail_adapt if (self._fail_adapt > 0 and result.fails > 0) else max(local_searches - 1, 0)
             )

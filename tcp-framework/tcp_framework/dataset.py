@@ -70,6 +70,8 @@ class Dataset:
             if len(first_row) == 2:  # tr_all_built_commits.csv
                 job_id_idx = first_row.index("tr_job_id")
                 commit_id_idx = first_row.index("git_commit_id")
+                if debug:
+                    print("WARN: using the simplified map source, consider using full data")
                 for row in tqdm(reader, desc="preload_cycle_map", leave=False, disable=not debug):
                     if row[job_id_idx] in result:
                         continue
