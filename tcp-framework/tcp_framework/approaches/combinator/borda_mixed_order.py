@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import override
+
 from ...datatypes import TestCase
 from .mixed_order import MixedOrder
 

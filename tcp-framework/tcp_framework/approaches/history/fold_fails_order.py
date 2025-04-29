@@ -2,8 +2,9 @@ from collections import defaultdict
 from math import inf
 from random import Random
 from typing import Callable, Literal, Optional, Sequence, override
-from ..approach import Approach
+
 from ...datatypes import RunContext, TestCase, TestInfo
+from ..approach import Approach
 
 type FailFolder = tuple[Literal["dfe"], float] | Literal["total", "recent"]
 

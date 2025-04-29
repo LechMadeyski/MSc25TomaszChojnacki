@@ -1,8 +1,9 @@
 from collections import defaultdict
-from typing import Sequence, override
 from math import inf
-from ..approach import Approach
+from typing import Sequence, override
+
 from ...datatypes import RunContext, TestCase, TestInfo
+from ..approach import Approach
 
 EPSILON = 1e-6
 

@@ -1,7 +1,8 @@
 from collections import Counter
 from typing import Sequence, override
-from ..approach import Approach
+
 from ...datatypes import RunContext, TestCase, TestInfo
+from ..approach import Approach
 
 
 class RecentnessOrder(Approach):

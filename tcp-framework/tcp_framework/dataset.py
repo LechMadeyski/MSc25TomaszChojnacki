@@ -1,14 +1,16 @@
-from contextlib import contextmanager
 import csv
-import sys
 import gzip
-import pickle
-from typing import Any, Generator, Optional, NamedTuple
 import os
+import pickle
+import sys
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Any, Generator, NamedTuple, Optional
+
 import git
 import pandas as pd
 from tqdm import tqdm
+
 from .datatypes import Cycle, TestCase, TestInfo, VisibleTestResult
 
 _RTP_TORRENT_PROJECTS = [

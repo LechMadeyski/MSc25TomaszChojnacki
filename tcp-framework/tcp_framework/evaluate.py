@@ -1,9 +1,11 @@
 import time
 from typing import Literal, Sequence
+
 from tqdm import tqdm
+
 from .approaches import Approach
-from .datatypes import RunContext
 from .dataset import Dataset
+from .datatypes import RunContext
 from .metric_calc import MetricCalc
 
 type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR", "ATR"]

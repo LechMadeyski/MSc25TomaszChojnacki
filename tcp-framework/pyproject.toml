@@ -28,3 +28,4 @@ disallow_any_unimported = true
 [tool.ruff]
 extend-exclude = ["datasets"]
 line-length = 120
+lint.extend-select = ["I"]

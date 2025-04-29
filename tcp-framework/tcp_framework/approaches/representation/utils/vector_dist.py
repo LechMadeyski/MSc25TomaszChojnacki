@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import override
-from sentence_transformers.util import cos_sim
+
 import numpy as np
+from sentence_transformers.util import cos_sim
 
 
 class VectorDist(ABC):

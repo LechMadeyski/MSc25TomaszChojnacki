@@ -1,14 +1,11 @@
 from pathlib import Path
-from tcp_framework import (
-    evaluate,
-    Dataset,
-    metric_boxplot
-)
+
+from tcp_framework import Dataset, evaluate, metric_boxplot
 from tcp_framework.approaches import (
     Approach,
-    RandomOrder,
     FailDensityOrder,
     FoldFailsOrder,
+    RandomOrder,
 )
 
 REPOS = [
@@ -45,4 +42,9 @@ if __name__ == "__main__":
 
     for dataset in datasets:
         calcs = evaluate(APPROACHES, dataset, ["rAPFDc"], debug=1)
-        metric_boxplot(f"./out/rAPFDc-{dataset}.pdf", [c.r_apfd_c_list for c in calcs], title=f"rAPFDc - {dataset}", labels=["Random", "DFE", "Density"])
+        metric_boxplot(
+            f"./out/rAPFDc-{dataset}.pdf",
+            [c.r_apfd_c_list for c in calcs],
+            title=f"rAPFDc - {dataset}",
+            labels=["Random", "DFE", "Density"],
+        )

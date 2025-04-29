@@ -1,9 +1,10 @@
 from collections import defaultdict
-from typing import DefaultDict, Sequence, override
 from itertools import groupby
+from typing import DefaultDict, Sequence, override
+
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
-from ..representation import GroupAgg, VectorDist, CodeVectorizer, LazyCodeDistMap
+from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, VectorDist
 
 
 class FailCodeDistOrder(Approach):

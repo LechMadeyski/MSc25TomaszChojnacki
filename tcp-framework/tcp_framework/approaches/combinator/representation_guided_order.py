@@ -1,7 +1,8 @@
 from typing import Sequence, override
+
 from ...datatypes import RunContext, TestInfo
-from ..representation import LazyCodeDistMap, CodeVectorizer, GroupAgg, VectorDist
 from ..approach import Approach
+from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, VectorDist
 
 
 class RepresentationGuidedOrder(Approach):

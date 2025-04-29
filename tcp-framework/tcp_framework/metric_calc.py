@@ -1,4 +1,5 @@
 from typing import Sequence
+
 from .datatypes import TestInfo, TestResult
 
 EPSILON = 1e-6

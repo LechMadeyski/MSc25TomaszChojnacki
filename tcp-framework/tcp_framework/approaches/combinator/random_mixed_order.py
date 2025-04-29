@@ -1,5 +1,6 @@
 from random import Random
 from typing import Optional, Sequence, override
+
 from ...datatypes import TestCase
 from ..approach import Approach
 from .mixed_order import MixedOrder

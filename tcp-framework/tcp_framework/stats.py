@@ -1,9 +1,17 @@
-from typing import Optional
+from typing import Optional, Sequence
+
 import matplotlib.pyplot as plt
 
-def metric_boxplot(file_path: str, values: list[list[float]], *, title: Optional[str] = None, labels: Optional[list[str]] = None) -> None:
+
+def metric_boxplot(
+    file_path: str,
+    values: Sequence[Sequence[float]],
+    *,
+    title: Optional[str] = None,
+    labels: Optional[Sequence[str]] = None,
+) -> None:
     if labels is None:
-        labels = [f"A{i+1}" for i in range(len(values))]
+        labels = [f"A{i + 1}" for i in range(len(values))]
     assert len(values) == len(labels)
 
     plt.clf()

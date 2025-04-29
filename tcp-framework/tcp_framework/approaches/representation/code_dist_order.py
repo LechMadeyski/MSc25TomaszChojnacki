@@ -1,7 +1,8 @@
 from typing import override
+
 from ...datatypes import RunContext
 from ..approach import Approach
-from .utils import LazyCodeDistMap, GroupAgg, VectorDist
+from .utils import GroupAgg, LazyCodeDistMap, VectorDist
 from .vectorizers import CodeVectorizer
 
 

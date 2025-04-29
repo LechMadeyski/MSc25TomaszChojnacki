@@ -1,5 +1,6 @@
 from random import Random
 from typing import override
+
 from ...datatypes import RunContext
 from ..approach import Approach
 
