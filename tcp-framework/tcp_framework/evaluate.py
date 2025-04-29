@@ -1,5 +1,5 @@
 import time
-from typing import Literal, Sequence
+from typing import Literal, Optional, Sequence
 
 from tqdm import tqdm
 
@@ -43,10 +43,12 @@ def _print_metrics(calcs: Sequence[MetricCalc], metrics: Sequence[SupportedMetri
 def evaluate(
     approaches: Sequence[Approach],
     dataset: Dataset,
-    metrics: Sequence[SupportedMetric],
+    metrics: Optional[Sequence[SupportedMetric]] = None,
     *,
     debug: int = 0,
 ) -> list[MetricCalc]:
+    if not metrics:
+        metrics = []
     for approach in approaches:
         approach.reset()
 

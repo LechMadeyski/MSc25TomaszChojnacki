@@ -6,14 +6,14 @@ from tcp_framework.approaches.representation import StVectorizer
 
 REPOS = [
     "LittleProxy",
+    "HikariCP",
+    "jade4j",
     "wicket-bootstrap",
     "titan",
     "dynjs",
-    "jade4j",
     "jsprit",
-    "optiq",
-    "HikariCP",
     "DSpace",
+    "optiq",
     "cloudify",
     "okhttp",
 ]

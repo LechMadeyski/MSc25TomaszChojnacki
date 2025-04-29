@@ -5,14 +5,14 @@ from tcp_framework.approaches import Approach, FoldFailsOrder, RandomOrder
 
 REPOS = [
     "LittleProxy",
+    "HikariCP",
+    "jade4j",
     "wicket-bootstrap",
     "titan",
     "dynjs",
-    "jade4j",
     "jsprit",
-    "optiq",
-    "HikariCP",
     "DSpace",
+    "optiq",
     "cloudify",
     "okhttp",
     "graylog2-server",
