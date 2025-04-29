@@ -2,6 +2,7 @@ from pathlib import Path
 from tcp_framework import (
     evaluate,
     Dataset,
+    metric_boxplot
 )
 from tcp_framework.approaches import (
     Approach,
@@ -43,4 +44,5 @@ if __name__ == "__main__":
     #     dataset.describe()
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, ["rAPFDc"], debug=1)
+        calcs = evaluate(APPROACHES, dataset, ["rAPFDc"], debug=1)
+        metric_boxplot(f"./out/rAPFDc-{dataset}.pdf", [c.r_apfd_c_list for c in calcs], title=f"rAPFDc - {dataset}", labels=["Random", "DFE", "Density"])
