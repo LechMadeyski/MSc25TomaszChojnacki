@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import override
+from typing import Sequence, override
 from math import inf
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase, TestInfo
@@ -27,7 +27,7 @@ class FailDensityOrder(Approach):
             ctx.execute(tc)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
             self._fails[ti.case] += ti.result.fails
             self._times[ti.case] += ti.result.time_s

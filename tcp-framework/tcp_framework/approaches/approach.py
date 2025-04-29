@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Callable, Sequence
 from ..datatypes import RunContext, TestCase, TestInfo
 
 
@@ -11,8 +12,11 @@ class Approach(ABC):
         self.prioritize(forked_ctx)
         return forked_ctx.prioritized_cases()
 
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         pass
 
     def reset(self) -> None:
         pass
+
+
+type ApproachFactory = Callable[[int], Approach]

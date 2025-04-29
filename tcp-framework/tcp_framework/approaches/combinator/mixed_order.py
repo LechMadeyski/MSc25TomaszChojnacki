@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from typing import Optional, override
+from typing import Optional, Sequence, override
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
 
 
 class MixedOrder(Approach):
-    def __init__(self, targets: list[Approach], weights: Optional[list[float]] = None) -> None:
+    def __init__(self, targets: Sequence[Approach], weights: Optional[list[float]] = None) -> None:
         self._targets = targets
         weights = weights if weights is not None else [1.0] * len(targets)
         assert len(targets) > 0, "targets must not be empty"
@@ -22,7 +22,7 @@ class MixedOrder(Approach):
             ctx.execute(tc)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for target in self._targets:
             target.on_static_feedback(test_infos)
 

@@ -1,4 +1,4 @@
-from typing import override
+from typing import Sequence, override
 from ...datatypes import RunContext, TestInfo
 from ..representation import LazyCodeDistMap, CodeVectorizer, GroupAgg, VectorDist
 from ..approach import Approach
@@ -41,7 +41,7 @@ class RepresentationGuidedOrder(Approach):
             ctx.execute(target)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         self._target.on_static_feedback(test_infos)
 
     @override

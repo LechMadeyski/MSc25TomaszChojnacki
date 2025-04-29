@@ -1,4 +1,4 @@
-import numpy as np
+from typing import Sequence
 from .datatypes import TestInfo, TestResult
 
 EPSILON = 1e-6
@@ -6,7 +6,7 @@ EPSILON = 1e-6
 
 class MetricCalc:
     @staticmethod
-    def apfd(results: list[TestResult]) -> float:
+    def apfd(results: Sequence[TestResult]) -> float:
         n = len(results)
         m = sum(tr.fails for tr in results)
         if n == 0 or m == 0:
@@ -15,7 +15,7 @@ class MetricCalc:
         return 1 - (nom / (n * m)) + (1 / (2 * n))
 
     @staticmethod
-    def r_apfd(results: list[TestResult]) -> float:
+    def r_apfd(results: Sequence[TestResult]) -> float:
         worst = sorted(results, key=lambda tr: tr.fails)
         apfd_min = MetricCalc.apfd(worst)
         apfd_max = MetricCalc.apfd(list(reversed(worst)))
@@ -25,7 +25,7 @@ class MetricCalc:
         return (apfd - apfd_min) / (apfd_max - apfd_min)
 
     @staticmethod
-    def apfd_c(results: list[TestResult]) -> float:
+    def apfd_c(results: Sequence[TestResult]) -> float:
         n = len(results)
         m = sum(tr.fails for tr in results)
         denom = m * sum(tr.time_s for tr in results)
@@ -50,7 +50,7 @@ class MetricCalc:
         return nom / denom
 
     @staticmethod
-    def r_apfd_c(results: list[TestResult]) -> float:
+    def r_apfd_c(results: Sequence[TestResult]) -> float:
         worst = sorted(results, key=lambda tr: tr.fails / tr.time_s if tr.time_s > 0 else float("inf"))
         apfd_c_min = MetricCalc.apfd_c(worst)
         apfd_c_max = MetricCalc.apfd_c(list(reversed(worst)))
@@ -60,7 +60,7 @@ class MetricCalc:
         return (apfd_c - apfd_c_min) / (apfd_c_max - apfd_c_min)
 
     @staticmethod
-    def n_apfd(results: list[TestResult], *, p: float) -> float:
+    def n_apfd(results: Sequence[TestResult], *, p: float) -> float:
         n = len(results)
         m = sum(tr.fails for tr in results)
         if n == 0 or m == 0:
@@ -69,7 +69,7 @@ class MetricCalc:
         return p - (nom / (n * m)) + (p / (2 * n))
 
     @staticmethod
-    def rpa(results: list[TestResult]) -> float:
+    def rpa(results: Sequence[TestResult]) -> float:
         k = len(results)
         optimal = sorted(results, key=lambda tr: (-abs(tr.fails), tr.time_s))
         nom = 0.0
@@ -86,11 +86,11 @@ class MetricCalc:
         return 1 - nom / (k * k * (k + 1))
 
     @staticmethod
-    def nrpa(results: list[TestResult]) -> float:
+    def nrpa(results: Sequence[TestResult]) -> float:
         return MetricCalc.rpa(results) / MetricCalc._rpa_m(k=len(results))
 
     @staticmethod
-    def ntr(cycles: list[list[TestResult]]) -> float:
+    def ntr(cycles: Sequence[list[TestResult]]) -> float:
         nom = 0.0
         denom = 0.0
         for cycle in cycles:
@@ -100,7 +100,7 @@ class MetricCalc:
         return nom / denom if denom > 0 else float("nan")
 
     @staticmethod
-    def _ntr_nom(results: list[TestResult]) -> float:
+    def _ntr_nom(results: Sequence[TestResult]) -> float:
         if not any(tr.fails > 0 for tr in results):
             return float("nan")
         total_time = sum(tr.time_s for tr in results)
@@ -109,27 +109,21 @@ class MetricCalc:
         return total_time - time_to_first
 
     @staticmethod
-    def _ntr_denom(results: list[TestResult]) -> float:
+    def _ntr_denom(results: Sequence[TestResult]) -> float:
         if not any(tr.fails > 0 for tr in results):
             return float("nan")
         return sum(tr.time_s for tr in results)
 
     @staticmethod
-    def _atr_cycle_time(results: list[TestResult], *, build_time_s: float, tcp_time_s: float) -> float:
+    def _atr_cycle_time(results: Sequence[TestResult], *, build_time_s: float, tcp_time_s: float) -> float:
         first_i = next((i for i, tr in enumerate(results) if tr.fails > 0), len(results) - 1)
         return max(tcp_time_s - build_time_s, 0.0) + sum(tr.time_s for tr in results[: first_i + 1])
 
     @staticmethod
-    def _avg(values: list[float]) -> float:
+    def _avg(values: Sequence[float]) -> float:
         if not values:
             return float("nan")
         return sum(values) / len(values)
-
-    @staticmethod
-    def _trend(values: list[float]) -> float:
-        x = np.linspace(0.0, 1.0, len(values))
-        m, _ = np.polyfit(x, values, 1)
-        return m
 
     def __init__(self, min_cases: int = 1) -> None:
         self._min_cases = min_cases  # Bagherzadeh 2021
@@ -144,27 +138,49 @@ class MetricCalc:
         self._atr_nom_sum = 0.0
         self._atr_denom_sum = 0.0
 
-    def include(self, *, ordered: list[TestInfo], base: list[TestInfo], build_time_s: float, tcp_time_s: float) -> None:
-        assert len(ordered) == len(base)
-        ordered_r = [ti.result for ti in ordered]
-        if len(ordered_r) < self._min_cases:
-            return None
+    def include_group(
+        self,
+        *,
+        ordered_group: Sequence[Sequence[TestInfo]],
+        base: Sequence[TestInfo],
+        build_time_s: float,
+        tcp_time_s_group: Sequence[float],
+    ) -> None:
+        assert len(ordered_group) == len(tcp_time_s_group)
         base_r = [ti.result for ti in base]
+        ordered_r_group = [[ti.result for ti in ordered] for ordered in ordered_group]
+        if len(base_r) < self._min_cases:
+            return
 
-        self._all_rpa.append(self.rpa(ordered_r))
-        self._all_nrpa.append(self.nrpa(ordered_r))
-        self._atr_nom_sum += self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
+        self._all_rpa.append(self._avg([self.rpa(ordered_r) for ordered_r in ordered_r_group]))
+        self._all_nrpa.append(self._avg([self.nrpa(ordered_r) for ordered_r in ordered_r_group]))
+        self._atr_nom_sum += self._avg(
+            [
+                self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
+                for ordered_r, tcp_time_s in zip(ordered_r_group, tcp_time_s_group)
+            ]
+        )
         self._atr_denom_sum += self._atr_cycle_time(base_r, build_time_s=build_time_s, tcp_time_s=0.0)
 
-        if not any(tr.fails > 0 for tr in ordered_r):
-            return None
+        if not any(tr.fails > 0 for tr in base_r):
+            return
 
-        self._all_apfd.append(self.apfd(ordered_r))
-        self._all_r_apfd.append(self.r_apfd(ordered_r))
-        self._all_apfd_c.append(self.apfd_c(ordered_r))
-        self._all_r_apfd_c.append(self.r_apfd_c(ordered_r))
-        self._ntr_nom_sum += self._ntr_nom(ordered_r)
-        self._ntr_denom_sum += self._ntr_denom(ordered_r)
+        self._all_apfd.append(self._avg([self.apfd(ordered_r) for ordered_r in ordered_r_group]))
+        self._all_r_apfd.append(self._avg([self.r_apfd(ordered_r) for ordered_r in ordered_r_group]))
+        self._all_apfd_c.append(self._avg([self.apfd_c(ordered_r) for ordered_r in ordered_r_group]))
+        self._all_r_apfd_c.append(self._avg([self.r_apfd_c(ordered_r) for ordered_r in ordered_r_group]))
+        self._ntr_nom_sum += self._avg([self._ntr_nom(ordered_r) for ordered_r in ordered_r_group])
+        self._ntr_denom_sum += self._avg([self._ntr_denom(ordered_r) for ordered_r in ordered_r_group])
+
+    def include(
+        self, *, ordered: Sequence[TestInfo], base: Sequence[TestInfo], build_time_s: float, tcp_time_s: float
+    ) -> None:
+        self.include_group(
+            ordered_group=[ordered],
+            base=base,
+            build_time_s=build_time_s,
+            tcp_time_s_group=[tcp_time_s],
+        )
 
     @property
     def failed_cycles(self) -> int:

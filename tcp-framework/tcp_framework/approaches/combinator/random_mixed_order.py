@@ -1,5 +1,5 @@
 from random import Random
-from typing import Optional, override
+from typing import Optional, Sequence, override
 from ...datatypes import TestCase
 from ..approach import Approach
 from .mixed_order import MixedOrder
@@ -10,7 +10,7 @@ class RandomMixedOrder(MixedOrder):
     Proposed.
     """
 
-    def __init__(self, targets: list[Approach], weights: Optional[list[float]] = None, seed: int = 0) -> None:
+    def __init__(self, targets: Sequence[Approach], weights: Optional[list[float]] = None, seed: int = 0) -> None:
         super().__init__(targets, weights)
         self._seed = seed
         self._rng = Random(seed)

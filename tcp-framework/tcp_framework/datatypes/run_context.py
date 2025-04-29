@@ -1,11 +1,11 @@
-from typing import override
+from typing import Sequence, override
 from .test_case import TestCase
 from .test_info import TestInfo
 from .test_result import TestResult
 
 
 class RunContext:
-    def __init__(self, test_infos: list[TestInfo]) -> None:
+    def __init__(self, test_infos: Sequence[TestInfo]) -> None:
         self._test_infos = {ti.case: ti for ti in test_infos}
         self._executed: list[TestCase] = []
 

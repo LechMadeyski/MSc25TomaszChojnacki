@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import override
+from typing import Sequence, override
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase, TestInfo
 
@@ -18,7 +18,7 @@ class RecentnessOrder(Approach):
             ctx.execute(tc)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         self._seen.update([ti.case for ti in test_infos])
 
     @override

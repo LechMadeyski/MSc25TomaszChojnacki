@@ -1,7 +1,7 @@
 from collections import defaultdict
 from math import inf
 from random import Random
-from typing import Callable, Literal, Optional, override
+from typing import Callable, Literal, Optional, Sequence, override
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase, TestInfo
 
@@ -38,7 +38,7 @@ class FoldFailsOrder(Approach):
                 ctx.execute(tc)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
             self._fails[ti.case] = self._fold(self._fails[ti.case], ti.result.fails)
 

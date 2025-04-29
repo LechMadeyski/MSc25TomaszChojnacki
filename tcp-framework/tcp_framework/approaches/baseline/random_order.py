@@ -15,8 +15,9 @@ class RandomOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        self._rng.shuffle(ctx.test_cases)
-        for tc in ctx.test_cases:
+        cases = ctx.test_cases[:]
+        self._rng.shuffle(cases)
+        for tc in cases:
             ctx.execute(tc)
 
     @override

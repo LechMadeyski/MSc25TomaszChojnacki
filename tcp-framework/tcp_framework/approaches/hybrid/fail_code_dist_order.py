@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import DefaultDict, override
+from typing import DefaultDict, Sequence, override
 from itertools import groupby
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
@@ -65,7 +65,7 @@ class FailCodeDistOrder(Approach):
                 select(target)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
             self._total_fails[ti.case] += ti.result.fails
 

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import override
+from typing import Sequence, override
 from ..approach import Approach
 from ...datatypes import RunContext, TestCase, TestInfo
 
@@ -19,7 +19,7 @@ class ExeTimeOrder(Approach):
             ctx.execute(tc)
 
     @override
-    def on_static_feedback(self, test_infos: list[TestInfo]) -> None:
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
             self._times[ti.case] = self._alpha * ti.result.time_s + (1.0 - self._alpha) * self._times[ti.case]
 
