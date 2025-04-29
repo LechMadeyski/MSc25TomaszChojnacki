@@ -13,4 +13,4 @@ from .history import (
 from .hybrid import FailCodeDistOrder as FailCodeDistOrder
 from .representation import CodeDistOrder as CodeDistOrder
 from .simple import TestLocOrder as TestLocOrder
-from .approach import Approach as Approach, ApproachFactory as ApproachFactory
+from .approach import Approach as Approach

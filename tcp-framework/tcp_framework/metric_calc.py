@@ -191,24 +191,48 @@ class MetricCalc:
         return self._avg(self._all_apfd)
 
     @property
+    def apfd_list(self) -> list[float]:
+        return self._all_apfd
+
+    @property
     def r_apfd_avg(self) -> float:
         return self._avg(self._all_r_apfd)
+
+    @property
+    def r_apfd_list(self) -> list[float]:
+        return self._all_r_apfd
 
     @property
     def apfd_c_avg(self) -> float:
         return self._avg(self._all_apfd_c)
 
     @property
+    def apfd_c_list(self) -> list[float]:
+        return self._all_apfd_c
+
+    @property
     def r_apfd_c_avg(self) -> float:
         return self._avg(self._all_r_apfd_c)
+
+    @property
+    def r_apfd_c_list(self) -> list[float]:
+        return self._all_r_apfd_c
 
     @property
     def rpa_avg(self) -> float:
         return self._avg(self._all_rpa)
 
     @property
+    def rpa_list(self) -> list[float]:
+        return self._all_rpa
+
+    @property
     def nrpa_avg(self) -> float:
         return self._avg(self._all_nrpa)
+
+    @property
+    def nrpa_list(self) -> list[float]:
+        return self._all_nrpa
 
     @property
     def ntr_val(self) -> float:
@@ -219,7 +243,7 @@ class MetricCalc:
         return 1 - (self._atr_nom_sum / self._atr_denom_sum) if self._atr_denom_sum > 0 else float("nan")
 
     @property
-    def atr_algorithm_total_s(self) -> float:
+    def atr_approach_total_s(self) -> float:
         return self._atr_nom_sum
 
     @property

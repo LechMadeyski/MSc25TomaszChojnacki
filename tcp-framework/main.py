@@ -5,7 +5,6 @@ from tcp_framework import (
 )
 from tcp_framework.approaches import (
     Approach,
-    ApproachFactory,
     RandomOrder,
     FailDensityOrder,
     FoldFailsOrder,
@@ -26,8 +25,8 @@ REPOS = [
     "graylog2-server",
 ]
 
-APPROACHES: list[Approach | ApproachFactory] = [
-    lambda seed: RandomOrder(seed),
+APPROACHES: list[Approach] = [
+    RandomOrder(),
     FoldFailsOrder(),
     FailDensityOrder(),
 ]

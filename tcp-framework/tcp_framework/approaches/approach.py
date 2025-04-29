@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence
+from typing import Sequence
 from ..datatypes import RunContext, TestCase, TestInfo
 
 
@@ -17,6 +17,3 @@ class Approach(ABC):
 
     def reset(self) -> None:
         pass
-
-
-type ApproachFactory = Callable[[int], Approach]
