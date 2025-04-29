@@ -39,14 +39,11 @@ if __name__ == "__main__":
         for repo in REPOS
     ]
 
-    # for dataset in datasets:
-    #     dataset.describe()
-
     for dataset in datasets:
-        calcs = evaluate(APPROACHES, dataset, ["rAPFD", "ATR"], debug=1)
+        calcs = evaluate(APPROACHES, dataset, ["ATR"], debug=1)
         metric_boxplot(
-            f"./out/rAPFD-{dataset.name}.pdf",
-            [c.r_apfd_c_list for c in calcs],
+            f"./out/ex1-rAPFD-{dataset.name}.pdf",
+            [c.r_apfd_list for c in calcs],
             title=f"rAPFD - {dataset.name}",
             labels=["Random", "CodeXEmbed", "E5", "BFE", "UniXCoder"],
         )

@@ -2,5 +2,6 @@
 .ruff_cache/
 .venv/
 __pycache__/
-datasets/*
-!datasets/.gitkeep
+/datasets/*
+/!datasets/.gitkeep
+/out/*.pdf

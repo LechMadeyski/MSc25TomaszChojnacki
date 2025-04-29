@@ -15,8 +15,8 @@ class CodeDistOrder(Approach):
     def __init__(
         self,
         vectorizer: CodeVectorizer,
-        distance: VectorDist,
-        aggregation: GroupAgg,
+        distance: VectorDist = VectorDist.euclid,
+        aggregation: GroupAgg = GroupAgg.min,
         fail_adapt: int = 0,
     ) -> None:
         self._vectorizer = vectorizer
@@ -26,6 +26,11 @@ class CodeDistOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
+        if len(ctx.test_cases) <= 1:
+            if len(ctx.test_cases) == 1:
+                ctx.execute(ctx.test_cases[0])
+            return
+
         distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
 
         start = max(
@@ -35,7 +40,8 @@ class CodeDistOrder(Approach):
         prioritized = set([start])
         queue = ctx.test_cases.copy()
         queue.remove(start)
-        local_searches = self._fail_adapt if (self._fail_adapt > 0 and ctx.execute(start).fails > 0) else 0
+        result = ctx.execute(start)
+        local_searches = self._fail_adapt if (self._fail_adapt > 0 and result.fails > 0) else 0
 
         while queue:
             optimum = min if local_searches > 0 else max
@@ -45,8 +51,9 @@ class CodeDistOrder(Approach):
             )
             prioritized.add(found)
             queue.remove(found)
+            result = ctx.execute(found)
             local_searches = (
                 self._fail_adapt
-                if (self._fail_adapt > 0 and ctx.execute(found).fails > 0)
+                if (self._fail_adapt > 0 and result.fails > 0)
                 else max(local_searches - 1, 0)
             )
