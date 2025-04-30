@@ -1,14 +1,14 @@
 from pathlib import Path
 
+from bayes_opt import BayesianOptimization
+
 from tcp_framework import Dataset, evaluate
 from tcp_framework.approaches import (
-    BordaMixedOrder,
     ExeTimeOrder,
     FailDensityOrder,
     FoldFailsOrder,
-    RandomOrder,
+    RandomMixedOrder,
     RecentnessOrder,
-    TestLocOrder,
 )
 
 REPOS = [
@@ -31,19 +31,28 @@ if __name__ == "__main__":
         for repo in REPOS
     ]
 
-    def target(*, rnd: float, dfe: float, tot: float, den: float, exe: float, loc: float, rct: float) -> float:
-        approach = BordaMixedOrder(
+    def target(*, dfe: float, tot: float, den: float, exe: float, rct: float) -> float:
+        approach = RandomMixedOrder(
             targets=[
-                RandomOrder(),
                 FoldFailsOrder(),
                 FoldFailsOrder("total"),
                 FailDensityOrder(),
                 ExeTimeOrder(),
-                TestLocOrder(),
                 RecentnessOrder(),
             ],
-            weights=[rnd, dfe, tot, den, exe, loc, rct],
+            weights=[dfe, tot, den, exe, rct],
         )
         return sum(evaluate([approach], dataset)[0].r_apfd_c_avg for dataset in datasets) / len(datasets)
 
-    print(target(rnd=0.1, dfe=0.1, tot=0.1, den=0.1, exe=0.1, loc=0.1, rct=0.1))
+    optimizer = BayesianOptimization(
+        f=target,
+        pbounds={k: (0.0, 1.0) for k in ["dfe", "tot", "den", "exe", "rct"]},
+        random_state=0,
+    )
+
+    optimizer.maximize(
+        init_points=10,
+        n_iter=40,
+    )
+
+    print(optimizer.max)

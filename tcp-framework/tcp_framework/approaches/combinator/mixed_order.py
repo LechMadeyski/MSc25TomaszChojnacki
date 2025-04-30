@@ -10,8 +10,8 @@ class MixedOrder(Approach):
         self._targets = targets
         weights = weights if weights is not None else [1.0] * len(targets)
         assert len(targets) > 0, "targets must not be empty"
-        assert all(w > 0 for w in weights), "weights must be positive"
         assert len(weights) == len(targets), "targets and weights must have the same length"
+        assert all(w >= 0 for w in weights), "weights must be non-negative"
         self._weights = [w / sum(weights) for w in weights]
 
     @abstractmethod

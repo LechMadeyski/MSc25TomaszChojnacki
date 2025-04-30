@@ -40,5 +40,5 @@ if __name__ == "__main__":
             f"./out/ex1-rAPFD-{dataset.name}.pdf",
             [c.r_apfd_list for c in calcs],
             title=f"rAPFD - {dataset.name}",
-            labels=["Random", "CodeXEmbed", "E5", "BFE", "UniXCoder"],
+            labels=["Random", "CodeXEmbed", "E5", "BGE", "UniXCoder"],
         )
