@@ -1,42 +1,35 @@
 from pathlib import Path
-from tcp_framework import (
-    evaluate,
-    Approach,
-    Dataset,
-    RandomOrder,
-    FoldFailsOrder,
-    FailCodeDistOrder,
-)
-from tcp_framework.approaches.representation import StVectorizer
+
+from tcp_framework import Dataset, evaluate
+from tcp_framework.approaches import Approach, FoldFailsOrder, RandomOrder
 
 REPOS = [
     "LittleProxy",
+    "HikariCP",
+    "jade4j",
     "wicket-bootstrap",
     "titan",
     "dynjs",
-    "jade4j",
     "jsprit",
-    "optiq",
-    "HikariCP",
     "DSpace",
+    "optiq",
     "cloudify",
     "okhttp",
     "graylog2-server",
 ]
 
-APPROACHES: list[Approach] = [
-    RandomOrder(),
-    FoldFailsOrder(),
-    FailCodeDistOrder(StVectorizer()),
-]
+APPROACHES: list[Approach] = [RandomOrder(), FoldFailsOrder()]
 
 if __name__ == "__main__":
-    rc_map = Dataset.preload_rc_map(Path("./datasets/tr_all_built_commits.csv"))
+    cycle_map = Dataset.preload_cycle_map(Path("./datasets/travistorrent_8_2_2017.csv"), debug=True)
 
     datasets = [
-        Dataset(runs_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), rc_map=rc_map)
+        Dataset(cycles_path=Path(f"./datasets/{repo}.csv"), repo_path=Path(f"./datasets/{repo}"), cycle_map=cycle_map)
         for repo in REPOS
     ]
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, debug=1)
+        dataset.describe()
+
+    for dataset in datasets:
+        evaluate(APPROACHES, dataset, ["rAPFDc", "ATR"], debug=1)

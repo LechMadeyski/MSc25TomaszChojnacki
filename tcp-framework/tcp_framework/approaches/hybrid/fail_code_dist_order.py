@@ -1,19 +1,24 @@
 from collections import defaultdict
-from typing import DefaultDict, override
 from itertools import groupby
-from ...datatypes import RunContext, TestCase
+from typing import DefaultDict, Sequence, override
+
+from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
-from ..representation import GroupAgg, MinAgg, VectorDist, EuclidDist, CodeVectorizer, LazyCodeDistMap
+from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, VectorDist
 
 
 class FailCodeDistOrder(Approach):
+    """
+    Proposed.
+    """
+
     def __init__(
         self,
         vectorizer: CodeVectorizer,
-        distance: VectorDist = EuclidDist(),
-        aggregation: GroupAgg = MinAgg(),
+        distance: VectorDist = VectorDist.euclid,
+        aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
-        self._total_fails: DefaultDict[str, int] = defaultdict(lambda: 0)
+        self._total_fails: DefaultDict[TestCase, int] = defaultdict(lambda: 0)
         self._vectorizer = vectorizer
         self._distance = distance
         self._aggregation = aggregation
@@ -25,8 +30,8 @@ class FailCodeDistOrder(Approach):
         clusters = [
             set(g)
             for _, g in groupby(
-                sorted(ctx.test_cases, key=lambda tc: self._total_fails[tc.name], reverse=True),
-                key=lambda tc: self._total_fails[tc.name],
+                sorted(ctx.test_cases, key=lambda tc: self._total_fails[tc], reverse=True),
+                key=lambda tc: self._total_fails[tc],
             )
         ]
 
@@ -36,9 +41,8 @@ class FailCodeDistOrder(Approach):
 
             def select(target: TestCase) -> None:
                 cluster.remove(target)
-                result = ctx.execute(target)
                 prioritized.add(target)
-                self._total_fails[target.name] += result.fails
+                ctx.execute(target)
 
             if len(cluster) == 1:
                 (target,) = cluster
@@ -60,6 +64,11 @@ class FailCodeDistOrder(Approach):
                     key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in prioritized),
                 )
                 select(target)
+
+    @override
+    def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
+        for ti in test_infos:
+            self._total_fails[ti.case] += ti.result.fails
 
     @override
     def reset(self) -> None:

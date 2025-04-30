@@ -3,7 +3,9 @@ name = "tcp-framework"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "bayesian-optimization>=2.0.3",
     "gitpython>=3.1.44",
+    "matplotlib>=3.10.1",
     "pandas>=2.2.3",
     "sentence-transformers>=4.0.1",
     "tqdm>=4.67.1",
@@ -28,3 +30,4 @@ disallow_any_unimported = true
 [tool.ruff]
 extend-exclude = ["datasets"]
 line-length = 120
+lint.extend-select = ["I"]

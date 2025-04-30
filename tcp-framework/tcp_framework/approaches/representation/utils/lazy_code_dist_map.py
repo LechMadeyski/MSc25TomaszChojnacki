@@ -1,7 +1,8 @@
 import numpy as np
-from .vectorizers import CodeVectorizer
-from .distances import VectorDist
-from ...datatypes import TestCase, RunContext
+
+from ....datatypes import RunContext, TestCase
+from ..vectorizers import CodeVectorizer
+from .vector_dist import VectorDist
 
 
 class LazyCodeDistMap:

@@ -1,18 +1,22 @@
 from typing import override
+
 from ...datatypes import RunContext
 from ..approach import Approach
-from .lazy_code_dist_map import LazyCodeDistMap
-from .aggregations import GroupAgg
-from .distances import VectorDist
+from .utils import GroupAgg, LazyCodeDistMap, VectorDist
 from .vectorizers import CodeVectorizer
 
 
 class CodeDistOrder(Approach):
+    """
+    Proposed.
+    Similar: https://doi.org/10.1007/s10515-011-0093-0
+    """
+
     def __init__(
         self,
         vectorizer: CodeVectorizer,
-        distance: VectorDist,
-        aggregation: GroupAgg,
+        distance: VectorDist = VectorDist.euclid,
+        aggregation: GroupAgg = GroupAgg.min,
         fail_adapt: int = 0,
     ) -> None:
         self._vectorizer = vectorizer
@@ -22,6 +26,11 @@ class CodeDistOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
+        if len(ctx.test_cases) <= 1:
+            if len(ctx.test_cases) == 1:
+                ctx.execute(ctx.test_cases[0])
+            return
+
         distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
 
         start = max(
@@ -31,7 +40,8 @@ class CodeDistOrder(Approach):
         prioritized = set([start])
         queue = ctx.test_cases.copy()
         queue.remove(start)
-        local_searches = self._fail_adapt if ctx.execute(start).fails > 0 else 0
+        result = ctx.execute(start)
+        local_searches = self._fail_adapt if (self._fail_adapt > 0 and result.fails > 0) else 0
 
         while queue:
             optimum = min if local_searches > 0 else max
@@ -41,4 +51,7 @@ class CodeDistOrder(Approach):
             )
             prioritized.add(found)
             queue.remove(found)
-            local_searches = self._fail_adapt if ctx.execute(found).fails > 0 else local_searches - 1
+            result = ctx.execute(found)
+            local_searches = (
+                self._fail_adapt if (self._fail_adapt > 0 and result.fails > 0) else max(local_searches - 1, 0)
+            )
