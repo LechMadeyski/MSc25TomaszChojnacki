@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from tcp_framework import Dataset, evaluate
-from tcp_framework.approaches import Approach, FailCodeDistOrder, FailSimilarityOrder
+from tcp_framework.approaches import Approach, ExeTimeOrder, FoldFailsOrder,InterpolatedOrder
 
 REPOS = [
     "LittleProxy",
@@ -18,7 +18,10 @@ REPOS = [
     "graylog2-server",
 ]
 
-APPROACHES: list[Approach] = [FailCodeDistOrder(), FailSimilarityOrder()]
+APPROACHES: list[Approach] = [
+    FoldFailsOrder(),
+    InterpolatedOrder(ExeTimeOrder(), 5, FoldFailsOrder(), mode="failed"),
+]
 
 if __name__ == "__main__":
     cycle_map = Dataset.preload_cycle_map(Path("./datasets/travistorrent_8_2_2017.csv"), debug=True)
@@ -32,4 +35,4 @@ if __name__ == "__main__":
     #     dataset.describe()
 
     for dataset in datasets:
-        evaluate(APPROACHES, dataset, ["rAPFD"], debug=1)
+        evaluate(APPROACHES, dataset, ["rAPFDc"], debug=1)
