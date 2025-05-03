@@ -19,7 +19,11 @@ class MixedOrder(Approach):
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        for tc in self.merge_queues([target.get_dry_ordering(ctx) for target in self._targets]):
+        queues = [
+            target.get_dry_ordering(ctx) if weight > 0.0 else ctx.test_cases.copy()
+            for target, weight in zip(self._targets, self._weights)
+        ]
+        for tc in self.merge_queues(queues):
             ctx.execute(tc)
 
     @override
