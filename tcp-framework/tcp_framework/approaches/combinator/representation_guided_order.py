@@ -4,6 +4,7 @@ from ...datatypes import RunContext, TestInfo
 from ..approach import Approach
 from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, VectorDist
 
+# TODO: turn into a tie-breaker
 
 class RepresentationGuidedOrder(Approach):
     """
