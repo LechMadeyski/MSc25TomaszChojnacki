@@ -6,6 +6,7 @@ from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, VectorDi
 
 # TODO: turn into a tie-breaker
 
+
 class RepresentationGuidedOrder(Approach):
     """
     Proposed.

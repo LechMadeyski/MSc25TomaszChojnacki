@@ -1,1 +1,2 @@
 from .fail_code_dist_order import FailCodeDistOrder as FailCodeDistOrder
+from .fail_similarity_order import FailSimilarityOrder as FailSimilarityOrder

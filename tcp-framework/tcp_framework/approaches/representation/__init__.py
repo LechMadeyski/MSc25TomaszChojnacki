@@ -1,6 +1,8 @@
 from .code_dist_order import CodeDistOrder as CodeDistOrder
+from .similarity_order import SimilarityOrder as SimilarityOrder
 from .utils import GroupAgg as GroupAgg
 from .utils import LazyCodeDistMap as LazyCodeDistMap
 from .utils import VectorDist as VectorDist
+from .utils import lccss as lccss
 from .vectorizers import CodeVectorizer as CodeVectorizer
 from .vectorizers import StVectorizer as StVectorizer

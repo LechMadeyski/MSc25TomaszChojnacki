@@ -1,32 +1,29 @@
 from collections import defaultdict
 from itertools import groupby
-from typing import DefaultDict, Sequence, override
+from typing import Callable, DefaultDict, Sequence, override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
-from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
+from ..representation import GroupAgg, lccss
+from ..representation.utils import normalize_code
 
 
-class FailCodeDistOrder(Approach):
+class FailSimilarityOrder(Approach):
     """
     Proposed.
     """
 
     def __init__(
         self,
-        vectorizer: CodeVectorizer = StVectorizer(),
-        distance: VectorDist = VectorDist.euclid,
+        similarity: Callable[[str, str], int] = lccss,
         aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
         self._total_fails: DefaultDict[TestCase, int] = defaultdict(lambda: 0)
-        self._vectorizer = vectorizer
-        self._distance = distance
+        self._similarity = similarity
         self._aggregation = aggregation
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
-
         clusters = [
             set(g)
             for _, g in groupby(
@@ -35,6 +32,7 @@ class FailCodeDistOrder(Approach):
             )
         ]
 
+        codes = {tc: normalize_code(ctx.inspect_code(tc)) for tc in ctx.test_cases}
         prioritized: set[TestCase] = set()
 
         for cluster in clusters:
@@ -52,7 +50,9 @@ class FailCodeDistOrder(Approach):
             if not prioritized:
                 target = max(
                     cluster,
-                    key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in cluster if tc1 != tc2),
+                    key=lambda tc1: self._aggregation(
+                        -self._similarity(codes[tc1], codes[tc2]) for tc2 in cluster if tc1 != tc2
+                    ),
                 )
                 select(target)
 
@@ -61,7 +61,7 @@ class FailCodeDistOrder(Approach):
             while cluster:
                 target = optimum(
                     cluster,
-                    key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in prioritized),
+                    key=lambda tc1: self._aggregation(-self._similarity(codes[tc1], codes[tc2]) for tc2 in prioritized),
                 )
                 select(target)
 

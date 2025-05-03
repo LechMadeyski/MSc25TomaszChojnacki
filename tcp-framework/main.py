@@ -1,8 +1,7 @@
 from pathlib import Path
 
 from tcp_framework import Dataset, evaluate
-from tcp_framework.approaches import Approach, FailCodeDistOrder
-from tcp_framework.approaches.representation import StVectorizer
+from tcp_framework.approaches import Approach, FailCodeDistOrder, FailSimilarityOrder
 
 REPOS = [
     "LittleProxy",
@@ -19,7 +18,7 @@ REPOS = [
     "graylog2-server",
 ]
 
-APPROACHES: list[Approach] = []
+APPROACHES: list[Approach] = [FailCodeDistOrder(), FailSimilarityOrder()]
 
 if __name__ == "__main__":
     cycle_map = Dataset.preload_cycle_map(Path("./datasets/travistorrent_8_2_2017.csv"), debug=True)
