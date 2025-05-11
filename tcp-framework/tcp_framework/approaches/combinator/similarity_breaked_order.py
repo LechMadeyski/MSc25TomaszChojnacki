@@ -1,5 +1,3 @@
-from collections import defaultdict
-from itertools import groupby
 from typing import Callable, Sequence, override
 
 from ...datatypes import RunContext, TestCase, TestInfo
@@ -8,29 +6,24 @@ from ..representation import GroupAgg, lccss
 from ..representation.utils import normalize_code
 
 
-class FailSimilarityOrder(Approach):
+class SimilarityBreakedOrder(Approach):
     """
     Proposed.
     """
 
     def __init__(
         self,
+        target: Approach,
         similarity: Callable[[str, str], int] = lccss,
         aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
-        self._total_fails: defaultdict[TestCase, int] = defaultdict(lambda: 0)
+        self._target = target
         self._similarity = similarity
         self._aggregation = aggregation
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        clusters = [
-            set(g)
-            for _, g in groupby(
-                sorted(ctx.test_cases, key=lambda tc: self._total_fails[tc], reverse=True),
-                key=lambda tc: self._total_fails[tc],
-            )
-        ]
+        clusters = self._target.get_dry_ordering(ctx)
 
         codes = {tc: normalize_code(ctx.inspect_code(tc)) for tc in ctx.test_cases}
         prioritized: set[TestCase] = set()
@@ -43,8 +36,7 @@ class FailSimilarityOrder(Approach):
                 ctx.execute(target)
 
             if len(cluster) == 1:
-                (target,) = cluster
-                select(target)
+                select(cluster[0])
                 continue
 
             if not prioritized:
@@ -67,9 +59,8 @@ class FailSimilarityOrder(Approach):
 
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
-        for ti in test_infos:
-            self._total_fails[ti.case] += ti.result.fails
+        self._target.on_static_feedback(test_infos)
 
     @override
     def reset(self) -> None:
-        self._total_fails.clear()
+        self._target.reset()

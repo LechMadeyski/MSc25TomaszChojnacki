@@ -46,7 +46,7 @@ class RunContext:
 class ForkedRunContext(RunContext):
     @override
     def execute(self, test_case: TestCase, *, key: Optional[str] = None) -> TestResult:
-        return super().execute(test_case).hide()  # only leak results in the top RunContext
+        return super().execute(test_case, key=key).hide()  # only leak results in the top RunContext
 
     @override
     def prioritized_infos(self) -> Ordering[TestInfo]:

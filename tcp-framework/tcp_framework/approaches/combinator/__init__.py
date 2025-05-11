@@ -2,3 +2,4 @@ from .borda_mixed_order import BordaMixedOrder as BordaMixedOrder
 from .code_dist_breaked_order import CodeDistBreakedOrder as CodeDistBreakedOrder
 from .interpolated_order import InterpolatedOrder as InterpolatedOrder
 from .random_mixed_order import RandomMixedOrder as RandomMixedOrder
+from .similarity_breaked_order import SimilarityBreakedOrder as SimilarityBreakedOrder
