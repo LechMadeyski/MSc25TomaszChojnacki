@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import groupby
-from typing import Callable, DefaultDict, Sequence, override
+from typing import Callable, Sequence, override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
@@ -18,7 +18,7 @@ class FailSimilarityOrder(Approach):
         similarity: Callable[[str, str], int] = lccss,
         aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
-        self._total_fails: DefaultDict[TestCase, int] = defaultdict(lambda: 0)
+        self._total_fails: defaultdict[TestCase, int] = defaultdict(lambda: 0)
         self._similarity = similarity
         self._aggregation = aggregation
 

@@ -1,5 +1,3 @@
-from collections import defaultdict
-from itertools import groupby
 from typing import Sequence, override
 
 from ...datatypes import RunContext, TestCase, TestInfo
@@ -7,18 +5,19 @@ from ..approach import Approach
 from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
 
 
-class FailCodeDistOrder(Approach):
+class CodeDistBreakedOrder(Approach):
     """
     Proposed.
     """
 
     def __init__(
         self,
+        target: Approach,
         vectorizer: CodeVectorizer = StVectorizer(),
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
     ) -> None:
-        self._total_fails: defaultdict[TestCase, int] = defaultdict(lambda: 0)
+        self._target = target
         self._vectorizer = vectorizer
         self._distance = distance
         self._aggregation = aggregation
@@ -27,13 +26,7 @@ class FailCodeDistOrder(Approach):
     def prioritize(self, ctx: RunContext) -> None:
         distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
 
-        clusters = [
-            set(g)
-            for _, g in groupby(
-                sorted(ctx.test_cases, key=lambda tc: self._total_fails[tc], reverse=True),
-                key=lambda tc: self._total_fails[tc],
-            )
-        ]
+        clusters = self._target.get_dry_ordering(ctx)
 
         prioritized: set[TestCase] = set()
 
@@ -45,8 +38,7 @@ class FailCodeDistOrder(Approach):
                 ctx.execute(target)
 
             if len(cluster) == 1:
-                (target,) = cluster
-                select(target)
+                select(cluster[0])
                 continue
 
             if not prioritized:
@@ -67,9 +59,8 @@ class FailCodeDistOrder(Approach):
 
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
-        for ti in test_infos:
-            self._total_fails[ti.case] += ti.result.fails
+        self._target.on_static_feedback(test_infos)
 
     @override
     def reset(self) -> None:
-        self._total_fails.clear()
+        self._target.reset()

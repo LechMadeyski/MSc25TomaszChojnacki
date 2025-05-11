@@ -3,12 +3,11 @@ from pathlib import Path
 from tcp_framework import Dataset, evaluate
 from tcp_framework.approaches import (
     Approach,
-    BordaMixedOrder,
-    ExeTimeOrder,
+    CodeDistBreakedOrder,
+    FailCodeDistOrder,
     FoldFailsOrder,
-    InterpolatedOrder,
-    RandomMixedOrder,
 )
+from tcp_framework.approaches.representation import StVectorizer
 
 REPOS = [
     "LittleProxy",
@@ -25,11 +24,13 @@ REPOS = [
     "graylog2-server",
 ]
 
+vectorizer = StVectorizer()
+
 APPROACHES: list[Approach] = [
     FoldFailsOrder(),
-    InterpolatedOrder(ExeTimeOrder(), 5, FoldFailsOrder(), mode="failed"),
-    RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [1, 0.1]),
-    BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [1, 0.1]),
+    FailCodeDistOrder(vectorizer),
+    CodeDistBreakedOrder(FoldFailsOrder("total", seed = None), vectorizer),
+    CodeDistBreakedOrder(FoldFailsOrder("total"), vectorizer),
 ]
 
 if __name__ == "__main__":

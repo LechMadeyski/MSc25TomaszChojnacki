@@ -16,7 +16,7 @@ class RecentnessOrder(Approach):
     @override
     def prioritize(self, ctx: RunContext) -> None:
         for tc in sorted(ctx.test_cases, key=lambda tc: self._seen.get(tc, 0)):
-            ctx.execute(tc)
+            ctx.execute(tc, key=str(self._seen[tc]))
 
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:

@@ -25,7 +25,7 @@ class FailDensityOrder(Approach):
     @override
     def prioritize(self, ctx: RunContext) -> None:
         for tc in sorted(ctx.test_cases, key=lambda tc: self._density(tc), reverse=True):
-            ctx.execute(tc)
+            ctx.execute(tc, key=f"{self._density(tc):.3f}")
 
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
