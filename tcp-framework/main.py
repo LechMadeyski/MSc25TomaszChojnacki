@@ -1,7 +1,14 @@
 from pathlib import Path
 
 from tcp_framework import Dataset, evaluate
-from tcp_framework.approaches import Approach, ExeTimeOrder, FoldFailsOrder,InterpolatedOrder
+from tcp_framework.approaches import (
+    Approach,
+    BordaMixedOrder,
+    ExeTimeOrder,
+    FoldFailsOrder,
+    InterpolatedOrder,
+    RandomMixedOrder,
+)
 
 REPOS = [
     "LittleProxy",
@@ -21,6 +28,8 @@ REPOS = [
 APPROACHES: list[Approach] = [
     FoldFailsOrder(),
     InterpolatedOrder(ExeTimeOrder(), 5, FoldFailsOrder(), mode="failed"),
+    RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [1, 0.1]),
+    BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [1, 0.1]),
 ]
 
 if __name__ == "__main__":

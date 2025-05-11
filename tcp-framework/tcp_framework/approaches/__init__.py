@@ -4,7 +4,6 @@ from .baseline import RandomOrder as RandomOrder
 from .combinator import BordaMixedOrder as BordaMixedOrder
 from .combinator import InterpolatedOrder as InterpolatedOrder
 from .combinator import RandomMixedOrder as RandomMixedOrder
-from .combinator import RepresentationGuidedOrder as RepresentationGuidedOrder
 from .history import ExeTimeOrder as ExeTimeOrder
 from .history import FailDensityOrder as FailDensityOrder
 from .history import FoldFailsOrder as FoldFailsOrder

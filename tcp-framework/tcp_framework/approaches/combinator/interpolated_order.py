@@ -2,6 +2,7 @@ from random import Random
 from typing import Literal, Sequence, override
 
 from ...datatypes import RunContext, TestInfo
+from ...deep import deep_any, deep_len, deep_remove
 from ..approach import Approach
 
 type Mode = Literal["all", "failed"]
@@ -31,19 +32,19 @@ class InterpolatedOrder(Approach):
         after = self._after.get_dry_ordering(ctx)
         after_weight = self._cycle / self._cutoff
 
-        for _ in range(len(before)):
+        for _ in range(deep_len(before)):
             real = self._rng.random()
-            target = after[0] if real < after_weight else before[0]
-            before.remove(target)
-            after.remove(target)
+            target_group = after[0] if real < after_weight else before[0]
+            target = self._rng.choice(target_group)
+            deep_remove(before, target)
+            deep_remove(after, target)
             ctx.execute(target)
 
         match self._mode:
             case "all":
                 self._cycle += 1
             case "failed":
-                test_infos = ctx.prioritized_infos()
-                if any(ti.result.fails > 0 for ti in test_infos):
+                if deep_any(ctx.prioritized_infos(), lambda ti: ti.result.fails > 0):
                     self._cycle += 1
 
     @override

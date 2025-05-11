@@ -1,6 +1,7 @@
 from typing import Sequence
 
 from .datatypes import TestInfo, TestResult
+from .deep import deep_map
 
 EPSILON = 1e-6
 
@@ -149,7 +150,7 @@ class MetricCalc:
     ) -> None:
         assert len(ordered_group) == len(tcp_time_s_group), "results and times must have the same length"
         base_r = [ti.result for ti in base]
-        ordered_r_group = [[ti.result for ti in ordered] for ordered in ordered_group]
+        ordered_r_group = deep_map(ordered_group, lambda ti: ti.result)
         if len(base_r) < self._min_cases:
             return
 

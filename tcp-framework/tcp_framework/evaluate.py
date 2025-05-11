@@ -6,6 +6,7 @@ from tqdm import tqdm
 from .approaches import Approach
 from .dataset import Dataset
 from .datatypes import RunContext
+from .deep import flatten
 from .metric_calc import MetricCalc
 
 type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR", "ATR"]
@@ -62,7 +63,7 @@ def evaluate(
             start = time.monotonic()
             approach.prioritize(ctx)
             end = time.monotonic()
-            ordering = ctx.prioritized_infos()
+            ordering = flatten(ctx.prioritized_infos())
             approach.on_static_feedback(ordering)
             calcs[ai].include(
                 ordered=ordering, base=cycle.tests, build_time_s=cycle.build_time_s, tcp_time_s=end - start
