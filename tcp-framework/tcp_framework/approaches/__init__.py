@@ -5,6 +5,7 @@ from .combinator import BordaMixedOrder as BordaMixedOrder
 from .combinator import CodeDistBreakedOrder as CodeDistBreakedOrder
 from .combinator import InterpolatedOrder as InterpolatedOrder
 from .combinator import RandomMixedOrder as RandomMixedOrder
+from .combinator import SchulzeMixedOrder as SchulzeMixedOrder
 from .combinator import SimilarityBreakedOrder as SimilarityBreakedOrder
 from .history import ExeTimeOrder as ExeTimeOrder
 from .history import FailDensityOrder as FailDensityOrder
