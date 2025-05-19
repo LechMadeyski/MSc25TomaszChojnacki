@@ -1,14 +1,26 @@
 import logging
+from typing import Literal, Optional
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from ..utils.parser import extract_code_identifiers, normalize_code
 from .code_vectorizer import CodeVectorizer
+
+type Normalization = Optional[Literal["formatting", "identifiers"]]
 
 
 class StVectorizer(CodeVectorizer):
     # Salesforce/SFR-Embedding-Code-400M_R, intfloat/e5-base-v2, BAAI/bge-base-en-v1.5, microsoft/unixcoder-base
-    def __init__(self, model: str = "intfloat/e5-base-v2", *, slice: int = 128, cache_limit: int = 128) -> None:
+    def __init__(
+        self,
+        model: str = "intfloat/e5-base-v2",
+        *,
+        normalization: Normalization = "identifiers",
+        slice: int = 256,
+        cache_limit: int = 256,
+    ) -> None:
+        self._normalization = normalization
         self._slice = slice
         self._cache_limit = cache_limit
         self._cache: dict[int, np.ndarray] = {}
@@ -21,6 +33,11 @@ class StVectorizer(CodeVectorizer):
         if class_idx == -1:
             class_idx = 0
         code = code[class_idx:]
+        match self._normalization:
+            case "formatting":
+                code = normalize_code(code)
+            case "identifiers":
+                code = extract_code_identifiers(code)
         code = code[: self._slice] if self._slice else code
         h = hash(code)
         if h in self._cache:

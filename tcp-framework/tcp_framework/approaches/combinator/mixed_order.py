@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import Optional, Sequence, override
 
-from ...datatypes import RunContext, TestCase, TestInfo
+from ...datatypes import Ordering, RunContext, TestInfo
+from ...deep import deepen
 from ..approach import Approach
 
 
@@ -15,12 +16,17 @@ class MixedOrder(Approach):
         self._weights = [w / sum(weights) for w in weights]
 
     @abstractmethod
-    def merge_queues(self, queues: list[list[TestCase]]) -> list[TestCase]: ...
+    def merge_queues(self, queues: list[Ordering]) -> Ordering: ...
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
-        for tc in self.merge_queues([target.get_dry_ordering(ctx) for target in self._targets]):
-            ctx.execute(tc)
+        queues = [
+            target.get_dry_ordering(ctx) if weight > 0.0 else deepen(ctx.test_cases)
+            for target, weight in zip(self._targets, self._weights)
+        ]
+        for i, tcs in enumerate(self.merge_queues(queues)):
+            for tc in tcs:
+                ctx.execute(tc, key=str(i))
 
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:

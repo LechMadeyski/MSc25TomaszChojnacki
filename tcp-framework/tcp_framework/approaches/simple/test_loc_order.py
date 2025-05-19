@@ -22,4 +22,4 @@ class TestLocOrder(Approach):
             locs[case] = len(lines)
 
         for case in sorted(ctx.test_cases, key=lambda tc: locs[tc], reverse=True):
-            ctx.execute(case)
+            ctx.execute(case, key=str(locs[case]))

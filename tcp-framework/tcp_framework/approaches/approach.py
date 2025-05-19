@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
 
-from ..datatypes import RunContext, TestCase, TestInfo
+from ..datatypes import Ordering, RunContext, TestInfo
 
 
 class Approach(ABC):
     @abstractmethod
     def prioritize(self, ctx: RunContext) -> None: ...
 
-    def get_dry_ordering(self, ctx: RunContext) -> list[TestCase]:
+    def get_dry_ordering(self, ctx: RunContext) -> Ordering:
         forked_ctx = ctx.fork()
         self.prioritize(forked_ctx)
         return forked_ctx.prioritized_cases()

@@ -1,8 +1,11 @@
 from collections import defaultdict
-from typing import override
+from typing import Optional, override
 
-from ...datatypes import TestCase
+from ...datatypes import Ordering, TestCase
+from ...deep import deep_len
 from .mixed_order import MixedOrder
+
+EPSILON = 1e-6
 
 
 class BordaMixedOrder(MixedOrder):
@@ -13,9 +16,26 @@ class BordaMixedOrder(MixedOrder):
     """
 
     @override
-    def merge_queues(self, queues: list[list[TestCase]]) -> list[TestCase]:
+    def merge_queues(self, queues: list[Ordering]) -> Ordering:
         borda: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
         for qi, queue in enumerate(queues):
-            for ti, tc in enumerate(queue):
-                borda[tc] += (len(queue) - ti - 1) * self._weights[qi]
-        return sorted(borda.keys(), key=lambda tc: borda[tc], reverse=True)
+            ti = 0
+            size = deep_len(queue)
+            for tcs in queue:
+                max_score = size - ti - 1
+                min_score = size - ti - len(tcs)
+                votes = self._weights[qi] * (max_score + min_score) / 2
+                for tc in tcs:
+                    borda[tc] += votes
+                ti += len(tcs)
+
+        tcs = sorted(borda.keys(), key=lambda tc: borda[tc], reverse=True)
+        result: Ordering = []
+        last_score: Optional[float] = None
+        for tc in tcs:
+            if last_score is None or abs(last_score - borda[tc]) > EPSILON:
+                result.append([tc])
+            else:
+                result[-1].append(tc)
+            last_score = borda[tc]
+        return result

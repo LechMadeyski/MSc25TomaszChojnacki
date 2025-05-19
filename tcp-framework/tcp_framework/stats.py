@@ -12,7 +12,7 @@ def metric_boxplot(
 ) -> None:
     if labels is None:
         labels = [f"A{i + 1}" for i in range(len(values))]
-    assert len(values) == len(labels)
+    assert len(values) == len(labels), "values and labels must have the same length"
 
     plt.clf()
     plt.rcParams.update({"font.size": 12})

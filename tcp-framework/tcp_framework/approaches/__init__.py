@@ -2,12 +2,15 @@ from .approach import Approach as Approach
 from .baseline import BaseOrder as BaseOrder
 from .baseline import RandomOrder as RandomOrder
 from .combinator import BordaMixedOrder as BordaMixedOrder
+from .combinator import CodeDistBreakedOrder as CodeDistBreakedOrder
+from .combinator import InterpolatedOrder as InterpolatedOrder
 from .combinator import RandomMixedOrder as RandomMixedOrder
-from .combinator import RepresentationGuidedOrder as RepresentationGuidedOrder
+from .combinator import SchulzeMixedOrder as SchulzeMixedOrder
+from .combinator import SimilarityBreakedOrder as SimilarityBreakedOrder
 from .history import ExeTimeOrder as ExeTimeOrder
 from .history import FailDensityOrder as FailDensityOrder
 from .history import FoldFailsOrder as FoldFailsOrder
 from .history import RecentnessOrder as RecentnessOrder
-from .hybrid import FailCodeDistOrder as FailCodeDistOrder
 from .representation import CodeDistOrder as CodeDistOrder
+from .representation import SimilarityOrder as SimilarityOrder
 from .simple import TestLocOrder as TestLocOrder
