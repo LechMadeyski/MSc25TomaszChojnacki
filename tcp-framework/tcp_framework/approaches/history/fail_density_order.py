@@ -13,7 +13,8 @@ class FailDensityOrder(Approach):
     Proposed. ?
     """
 
-    def __init__(self) -> None:
+    def __init__(self, alpha: float = 0.8) -> None:
+        self._alpha = alpha
         self._fails: defaultdict[TestCase, int] = defaultdict(lambda: 0)
         self._times: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
 
@@ -30,8 +31,8 @@ class FailDensityOrder(Approach):
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
-            self._fails[ti.case] += ti.result.fails
-            self._times[ti.case] += ti.result.time_s
+            self._fails[ti.case] = self._alpha * ti.result.fails + (1.0 - self._alpha) * self._fails[ti.case]
+            self._times[ti.case] = self._alpha * ti.result.time_s + (1.0 - self._alpha) * self._times[ti.case]
 
     @override
     def reset(self) -> None:

@@ -3,11 +3,7 @@ from pathlib import Path
 from tcp_framework import Dataset, evaluate
 from tcp_framework.approaches import (
     Approach,
-    BordaMixedOrder,
-    ExeTimeOrder,
-    FoldFailsOrder,
-    RandomMixedOrder,
-    SchulzeMixedOrder,
+    FailDensityOrder
 )
 
 REPOS = [
@@ -26,10 +22,7 @@ REPOS = [
 ]
 
 APPROACHES: list[Approach] = [
-    FoldFailsOrder(),
-    RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
-    BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
-    SchulzeMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
+    FailDensityOrder()
 ]
 
 if __name__ == "__main__":
