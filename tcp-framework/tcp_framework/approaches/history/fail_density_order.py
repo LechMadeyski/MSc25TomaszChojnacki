@@ -9,13 +9,9 @@ EPSILON = 1e-6
 
 
 class FailDensityOrder(Approach):
-    """
-    Proposed. ?
-    """
-
     def __init__(self, alpha: float = 0.8) -> None:
         self._alpha = alpha
-        self._fails: defaultdict[TestCase, int] = defaultdict(lambda: 0)
+        self._fails: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
         self._times: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
 
     def _density(self, tc: TestCase) -> float:

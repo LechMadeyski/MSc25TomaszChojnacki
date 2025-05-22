@@ -74,10 +74,11 @@ class MetricCalc:
     def rpa(results: Sequence[TestResult]) -> float:
         k = len(results)
         optimal = sorted(results, key=lambda tr: (-abs(tr.fails), tr.time_s))
+        optimal_index = {tr: i for i, tr in enumerate(optimal)}
         nom = 0.0
         for ti, t in enumerate(results, start=1):
-            for _ in range(ti, k + 1):  # ???
-                nom += k - optimal.index(t) + 2
+            for _ in range(ti, k + 1):
+                nom += k - optimal_index[t] + 2
         return nom / (k * k * (k + 1) / 2)
 
     @staticmethod

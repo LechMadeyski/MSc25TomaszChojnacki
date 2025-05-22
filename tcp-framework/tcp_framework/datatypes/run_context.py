@@ -39,8 +39,11 @@ class RunContext:
             raise ValueError("not all test cases were executed")
         return deep_map(self._executed, lambda tc: self._test_infos[tc])
 
-    def fork(self) -> "ForkedRunContext":
-        return ForkedRunContext(list(self._test_infos.values()))
+    def fork(self, test_cases: Optional[Sequence[TestCase]] = None) -> "ForkedRunContext":
+        test_infos = list(self._test_infos.values())
+        if test_cases is not None:
+            test_infos = [ti for tc, ti in self._test_infos.items() if tc in test_cases]
+        return ForkedRunContext(test_infos)
 
 
 class ForkedRunContext(RunContext):

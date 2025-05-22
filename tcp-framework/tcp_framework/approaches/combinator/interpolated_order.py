@@ -10,7 +10,7 @@ type Mode = Literal["all", "failed"]
 
 class InterpolatedOrder(Approach):
     """
-    Proposed. ?
+    Proposed.
     """
 
     def __init__(self, before: Approach, cutoff: int, after: Approach, *, mode: Mode = "all", seed: int = 0) -> None:

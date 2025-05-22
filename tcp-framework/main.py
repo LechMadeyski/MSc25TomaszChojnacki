@@ -1,10 +1,7 @@
 from pathlib import Path
 
 from tcp_framework import Dataset, evaluate
-from tcp_framework.approaches import (
-    Approach,
-    FailDensityOrder
-)
+from tcp_framework.approaches import Approach, ExeTimeOrder, FailDensityOrder, FoldFailsOrder, GenericBreakedOrder
 
 REPOS = [
     "LittleProxy",
@@ -22,7 +19,9 @@ REPOS = [
 ]
 
 APPROACHES: list[Approach] = [
-    FailDensityOrder()
+    FoldFailsOrder(),
+    FailDensityOrder(),
+    GenericBreakedOrder(target=FoldFailsOrder("total", seed=None), breaker=ExeTimeOrder()),
 ]
 
 if __name__ == "__main__":

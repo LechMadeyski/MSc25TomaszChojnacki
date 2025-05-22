@@ -6,10 +6,6 @@ from ..approach import Approach
 
 
 class ExeTimeOrder(Approach):
-    """
-    Proposed. ?
-    """
-
     def __init__(self, alpha: float = 0.8) -> None:
         self._times: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
         self._alpha = alpha

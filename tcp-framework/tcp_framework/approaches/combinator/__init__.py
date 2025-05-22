@@ -1,5 +1,6 @@
 from .borda_mixed_order import BordaMixedOrder as BordaMixedOrder
 from .code_dist_breaked_order import CodeDistBreakedOrder as CodeDistBreakedOrder
+from .generic_breaked_order import GenericBreakedOrder as GenericBreakedOrder
 from .interpolated_order import InterpolatedOrder as InterpolatedOrder
 from .random_mixed_order import RandomMixedOrder as RandomMixedOrder
 from .schulze_mixed_order import SchulzeMixedOrder as SchulzeMixedOrder

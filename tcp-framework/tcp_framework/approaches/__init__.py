@@ -3,6 +3,7 @@ from .baseline import BaseOrder as BaseOrder
 from .baseline import RandomOrder as RandomOrder
 from .combinator import BordaMixedOrder as BordaMixedOrder
 from .combinator import CodeDistBreakedOrder as CodeDistBreakedOrder
+from .combinator import GenericBreakedOrder as GenericBreakedOrder
 from .combinator import InterpolatedOrder as InterpolatedOrder
 from .combinator import RandomMixedOrder as RandomMixedOrder
 from .combinator import SchulzeMixedOrder as SchulzeMixedOrder

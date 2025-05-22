@@ -6,10 +6,6 @@ from ..approach import Approach
 
 
 class RecentnessOrder(Approach):
-    """
-    Proposed. ?
-    """
-
     def __init__(self) -> None:
         self._seen: Counter[TestCase] = Counter()
 
