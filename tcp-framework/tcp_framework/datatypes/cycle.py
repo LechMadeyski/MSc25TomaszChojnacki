@@ -1,10 +1,10 @@
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 from .test_info import TestInfo
 
 
 class Cycle:
-    def __init__(self, *, job_id: str, tests: Sequence[TestInfo], cycle_time_s: Optional[float]) -> None:
+    def __init__(self, *, job_id: str, tests: Sequence[TestInfo], cycle_time_s: float | None) -> None:
         self.job_id = job_id
         self.tests = tests
         self.cycle_time_s = max(cycle_time_s or 0.0, self.execution_time_s)

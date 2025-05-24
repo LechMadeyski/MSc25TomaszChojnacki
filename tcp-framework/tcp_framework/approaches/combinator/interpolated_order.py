@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from random import Random
-from typing import Literal, Sequence, override
+from typing import Literal, override
 
 from ...datatypes import RunContext, TestInfo
 from ...deep import deep_any, deep_len, deep_remove
@@ -26,7 +27,8 @@ class InterpolatedOrder(Approach):
     @override
     def prioritize(self, ctx: RunContext) -> None:
         if self._cycle >= self._cutoff:
-            return self._after.prioritize(ctx)
+            self._after.prioritize(ctx)
+            return
 
         before = self._before.get_dry_ordering(ctx)
         after = self._after.get_dry_ordering(ctx)

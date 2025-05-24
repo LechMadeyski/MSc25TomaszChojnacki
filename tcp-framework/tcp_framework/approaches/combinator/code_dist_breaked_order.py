@@ -1,8 +1,11 @@
-from typing import Sequence, override
+from collections.abc import Sequence
+from typing import override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
 from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
+
+DEFAULT_VECTORIZER = StVectorizer()
 
 
 class CodeDistBreakedOrder(Approach):
@@ -13,9 +16,10 @@ class CodeDistBreakedOrder(Approach):
     def __init__(
         self,
         target: Approach,
-        vectorizer: CodeVectorizer = StVectorizer(),
+        vectorizer: CodeVectorizer = DEFAULT_VECTORIZER,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
+        *,
         switching: bool = True,
     ) -> None:
         self._target = target
@@ -34,7 +38,7 @@ class CodeDistBreakedOrder(Approach):
 
         for cluster in clusters:
 
-            def select(target: TestCase) -> None:
+            def select(target: TestCase, cluster: list[TestCase] = cluster) -> None:
                 cluster.remove(target)
                 prioritized.add(target)
                 ctx.execute(target)

@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Sequence
 
 from .datatypes import TestInfo, TestResult
 from .deep import deep_map
@@ -160,7 +160,7 @@ class MetricCalc:
         self._atr_nom_sum += self._avg(
             [
                 self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
-                for ordered_r, tcp_time_s in zip(ordered_r_group, tcp_time_s_group)
+                for ordered_r, tcp_time_s in zip(ordered_r_group, tcp_time_s_group, strict=True)
             ]
         )
         self._atr_denom_sum += self._atr_cycle_time(base_r, build_time_s=build_time_s, tcp_time_s=0.0)

@@ -3,7 +3,9 @@ from typing import override
 from ...datatypes import RunContext
 from ..approach import Approach
 from .utils import GroupAgg, LazyCodeDistMap, VectorDist
-from .vectorizers import CodeVectorizer
+from .vectorizers import CodeVectorizer, StVectorizer
+
+DEFAULT_VECTORIZER = StVectorizer()
 
 
 class CodeDistOrder(Approach):
@@ -14,7 +16,7 @@ class CodeDistOrder(Approach):
 
     def __init__(
         self,
-        vectorizer: CodeVectorizer,
+        vectorizer: CodeVectorizer = DEFAULT_VECTORIZER,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
         fail_adapt: int = 0,
@@ -37,7 +39,7 @@ class CodeDistOrder(Approach):
             ctx.test_cases,
             key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in ctx.test_cases if tc1 != tc2),
         )
-        prioritized = set([start])
+        prioritized = {start}
         queue = ctx.test_cases.copy()
         queue.remove(start)
         result = ctx.execute(start)

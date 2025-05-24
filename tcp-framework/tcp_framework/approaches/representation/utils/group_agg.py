@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, override
+from collections.abc import Iterable
+from typing import override
 
 
 class GroupAgg(ABC):

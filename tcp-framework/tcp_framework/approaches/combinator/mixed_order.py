@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from typing import Optional, Sequence, override
+from collections.abc import Sequence
+from typing import override
 
 from ...datatypes import Ordering, RunContext, TestInfo
 from ...deep import deepen
@@ -7,7 +8,7 @@ from ..approach import Approach
 
 
 class MixedOrder(Approach):
-    def __init__(self, targets: Sequence[Approach], weights: Optional[list[float]] = None) -> None:
+    def __init__(self, targets: Sequence[Approach], weights: list[float] | None = None) -> None:
         self._targets = targets
         weights = weights if weights is not None else [1.0] * len(targets)
         assert len(targets) > 0, "targets must not be empty"
@@ -22,7 +23,7 @@ class MixedOrder(Approach):
     def prioritize(self, ctx: RunContext) -> None:
         queues = [
             target.get_dry_ordering(ctx) if weight > 0.0 else deepen(ctx.test_cases)
-            for target, weight in zip(self._targets, self._weights)
+            for target, weight in zip(self._targets, self._weights, strict=True)
         ]
         for i, tcs in enumerate(self.merge_queues(queues)):
             for tc in tcs:

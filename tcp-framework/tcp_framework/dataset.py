@@ -1,11 +1,11 @@
 import csv
 import gzip
-import os
 import pickle
 import sys
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generator, NamedTuple, Optional
+from typing import Any, NamedTuple
 
 import git
 import pandas as pd
@@ -39,11 +39,11 @@ _RTP_TORRENT_PROJECTS = [
 
 class CycleMapEntry(NamedTuple):
     commit_id: str
-    cycle_time_s: Optional[float]
+    cycle_time_s: float | None
 
 
 @contextmanager
-def _omit_csv_limit() -> Generator[None, Any, None]:
+def _omit_csv_limit() -> Generator[None, Any]:
     original_limit = csv.field_size_limit()
     try:
         csv.field_size_limit(sys.maxsize // 10)
@@ -63,7 +63,7 @@ class Dataset:
 
     @classmethod
     def preload_cycle_map(cls, cycle_map_path: Path, *, debug: bool = False) -> dict[str, CycleMapEntry]:
-        with _omit_csv_limit(), open(cycle_map_path) as f:
+        with _omit_csv_limit(), Path.open(cycle_map_path) as f:
             reader = csv.reader(f)
             first_row = next(reader)
             result: dict[str, CycleMapEntry] = {}
@@ -178,7 +178,7 @@ class Dataset:
         self._save_pickle(result)
         return result
 
-    def _load_pickle(self) -> Optional[list[Cycle]]:
+    def _load_pickle(self) -> list[Cycle] | None:
         if not self._cached:
             return None
         try:
@@ -196,16 +196,13 @@ class Dataset:
         except Exception:
             pass
 
-    def _read_content(self, name: str) -> Optional[str]:
+    def _read_content(self, name: str) -> str | None:
         name = name.replace(".", "/") + ".java"
-        paths = [os.path.join(self._repo_path, "src/test/java", name)]
-        for d in os.listdir(self._repo_path):
-            d = os.path.join(self._repo_path, d)
-            if os.path.isdir(d):
-                paths.append(os.path.join(d, "src/test/java", name))
+        paths = [self._repo_path / "src/test/java" / name]
+        paths.extend(d / "src/test/java" / name for d in self._repo_path.iterdir() if d.is_dir())
         for path in paths:
             try:
-                with open(path) as f:
+                with Path.open(path) as f:
                     return f.read()
             except Exception:
                 pass

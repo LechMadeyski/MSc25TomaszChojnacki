@@ -31,4 +31,40 @@ disallow_any_unimported = true
 [tool.ruff]
 extend-exclude = ["datasets"]
 line-length = 120
-lint.extend-select = ["I"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+extend-select = ["I"]
+ignore = [
+    "B027",
+    "BLE001",
+    "C901",
+    "COM812",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D107",
+    "D200",
+    "D202",
+    "D203",
+    "D205",
+    "D212",
+    "D400",
+    "D415",
+    "EM101",
+    "EM102",
+    "ERA001",
+    "PGH003",
+    "PLC0414",
+    "PLR0912",
+    "PLR2004",
+    "S101",
+    "S110",
+    "S301",
+    "S311",
+    "T201",
+    "TID252",
+    "TRY003",
+]

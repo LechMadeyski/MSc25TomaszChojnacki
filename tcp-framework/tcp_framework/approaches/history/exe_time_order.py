@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import Sequence, override
+from collections.abc import Sequence
+from typing import override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach

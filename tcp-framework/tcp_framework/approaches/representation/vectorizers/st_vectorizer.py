@@ -1,5 +1,5 @@
 import logging
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 from ..utils.parser import extract_code_identifiers, normalize_code
 from .code_vectorizer import CodeVectorizer
 
-type Normalization = Optional[Literal["formatting", "identifiers"]]
+type Normalization = Literal["formatting", "identifiers"] | None
 
 
 class StVectorizer(CodeVectorizer):
@@ -17,11 +17,11 @@ class StVectorizer(CodeVectorizer):
         model: str = "intfloat/e5-base-v2",
         *,
         normalization: Normalization = "identifiers",
-        slice: int = 256,
+        slicing: int = 256,
         cache_limit: int = 256,
     ) -> None:
         self._normalization = normalization
-        self._slice = slice
+        self._slicing = slicing
         self._cache_limit = cache_limit
         self._cache: dict[int, np.ndarray] = {}
         logging.disable(logging.CRITICAL)
@@ -38,7 +38,7 @@ class StVectorizer(CodeVectorizer):
                 code = normalize_code(code)
             case "identifiers":
                 code = extract_code_identifiers(code)
-        code = code[: self._slice] if self._slice else code
+        code = code[: self._slicing] if self._slicing else code
         h = hash(code)
         if h in self._cache:
             return self._cache[h]

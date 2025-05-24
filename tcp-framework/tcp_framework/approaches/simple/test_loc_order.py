@@ -5,7 +5,7 @@ from ..approach import Approach
 
 
 class TestLocOrder(Approach):
-    def __init__(self, skip_blank: bool = True) -> None:
+    def __init__(self, *, skip_blank: bool = True) -> None:
         self._skip_blank = skip_blank
 
     @override

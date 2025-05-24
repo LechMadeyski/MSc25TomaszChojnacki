@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
 
@@ -7,8 +7,8 @@ def metric_boxplot(
     file_path: str,
     values: Sequence[Sequence[float]],
     *,
-    title: Optional[str] = None,
-    labels: Optional[Sequence[str]] = None,
+    title: str | None = None,
+    labels: Sequence[str] | None = None,
 ) -> None:
     if labels is None:
         labels = [f"A{i + 1}" for i in range(len(values))]

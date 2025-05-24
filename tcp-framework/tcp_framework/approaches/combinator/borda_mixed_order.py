@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Optional, override
+from typing import override
 
 from ...datatypes import Ordering, TestCase
 from ...deep import deep_len
@@ -31,7 +31,7 @@ class BordaMixedOrder(MixedOrder):
 
         tcs = sorted(borda.keys(), key=lambda tc: borda[tc], reverse=True)
         result: Ordering = []
-        last_score: Optional[float] = None
+        last_score: float | None = None
         for tc in tcs:
             if last_score is None or abs(last_score - borda[tc]) > EPSILON:
                 result.append([tc])

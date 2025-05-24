@@ -1,7 +1,8 @@
 from collections import defaultdict
+from collections.abc import Callable, Sequence
 from math import inf
 from random import Random
-from typing import Callable, Literal, Optional, Sequence, override
+from typing import Literal, override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
@@ -17,7 +18,7 @@ class FoldFailsOrder(Approach):
     Original: https://doi.org/10.1109/ICSE.2002.1007961
     """
 
-    def __init__(self, folder: FailFolder = ("dfe", 0.8), seed: Optional[int] = 0) -> None:
+    def __init__(self, folder: FailFolder = ("dfe", 0.8), seed: int | None = 0) -> None:
         initial, self._fold = self._select_folder(folder)
         self._fails: defaultdict[TestCase, float] = defaultdict(lambda: initial)
         self._seed = seed
