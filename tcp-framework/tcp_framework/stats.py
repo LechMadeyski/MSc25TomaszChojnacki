@@ -1,10 +1,12 @@
+import json
 from collections.abc import Sequence
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 
 
 def metric_boxplot(
-    file_path: str,
+    file_path: Path,
     values: Sequence[Sequence[float]],
     *,
     title: str | None = None,
@@ -23,3 +25,17 @@ def metric_boxplot(
     plt.ylim(bottom=0.0, top=1.0)
     plt.boxplot(values, tick_labels=labels)
     plt.savefig(file_path)
+
+
+def dump_results(file_path: Path, key: str, results: Sequence[Sequence[float]]) -> None:
+    content: dict[str, Sequence[Sequence[float]]] = {}
+    try:
+        with Path.open(file_path, "r") as f:
+            content = json.load(f)
+    except Exception:
+        pass
+
+    content[key] = results
+
+    with Path.open(file_path, "w") as f:
+        json.dump(content, f, indent=2)

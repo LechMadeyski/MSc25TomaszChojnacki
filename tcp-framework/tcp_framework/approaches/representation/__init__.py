@@ -5,4 +5,5 @@ from .utils import LazyCodeDistMap as LazyCodeDistMap
 from .utils import VectorDist as VectorDist
 from .utils import lccss as lccss
 from .vectorizers import CodeVectorizer as CodeVectorizer
+from .vectorizers import Normalization as Normalization
 from .vectorizers import StVectorizer as StVectorizer

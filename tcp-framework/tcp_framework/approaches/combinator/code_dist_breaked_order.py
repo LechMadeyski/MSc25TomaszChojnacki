@@ -5,8 +5,6 @@ from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
 from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
 
-DEFAULT_VECTORIZER = StVectorizer()
-
 
 class CodeDistBreakedOrder(Approach):
     """
@@ -16,7 +14,7 @@ class CodeDistBreakedOrder(Approach):
     def __init__(
         self,
         target: Approach,
-        vectorizer: CodeVectorizer = DEFAULT_VECTORIZER,
+        vectorizer: CodeVectorizer = StVectorizer.default,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
         *,

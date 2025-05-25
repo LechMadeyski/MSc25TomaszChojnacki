@@ -5,8 +5,6 @@ from ..approach import Approach
 from .utils import GroupAgg, LazyCodeDistMap, VectorDist
 from .vectorizers import CodeVectorizer, StVectorizer
 
-DEFAULT_VECTORIZER = StVectorizer()
-
 
 class CodeDistOrder(Approach):
     """
@@ -16,7 +14,7 @@ class CodeDistOrder(Approach):
 
     def __init__(
         self,
-        vectorizer: CodeVectorizer = DEFAULT_VECTORIZER,
+        vectorizer: CodeVectorizer = StVectorizer.default,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
         fail_adapt: int = 0,

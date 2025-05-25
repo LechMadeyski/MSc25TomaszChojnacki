@@ -11,6 +11,8 @@ type Normalization = Literal["formatting", "identifiers"] | None
 
 
 class StVectorizer(CodeVectorizer):
+    default: "StVectorizer"
+
     # Salesforce/SFR-Embedding-Code-400M_R, intfloat/e5-base-v2, BAAI/bge-base-en-v1.5, microsoft/unixcoder-base
     def __init__(
         self,
@@ -47,3 +49,6 @@ class StVectorizer(CodeVectorizer):
         while len(self._cache) > self._cache_limit:
             del self._cache[next(iter(self._cache))]
         return embedding
+
+
+StVectorizer.default = StVectorizer()
