@@ -1,4 +1,4 @@
-# (RQ1) Different code dist parameters
+# (RQ1) What is the impact of the parameters of CodeDistOrder on its effectiveness?
 
 from collections.abc import Callable, Sequence
 from pathlib import Path
@@ -44,34 +44,30 @@ if __name__ == "__main__":
         ]
     ]
 
+
+    # (RQ1.1) How does the choice of normalization type affect CodeDistOrder's effectiveness?
     run_subquestion(
         datasets,
         "rq11",
-        [
-            "Salesforce/SFR-Embedding-Code-400M_R",
-            "intfloat/e5-base-v2",
-            "BAAI/bge-base-en-v1.5",
-            "microsoft/unixcoder-base",
-        ],
-        lambda model: CodeDistOrder(StVectorizer(model)),
-    )
-
-    run_subquestion(
-        datasets,
-        "rq12",
         cast("list[Normalization]", [None, "formatting", "identifiers"]),
         lambda normalization: CodeDistOrder(StVectorizer(normalization=normalization)),
     )
 
+
+    # (RQ1.2) How does the choice of vector distance affect CodeDistOrder's effectiveness?
     run_subquestion(
-        datasets, "rq13", [VectorDist.mann, VectorDist.euclid], lambda distance: CodeDistOrder(distance=distance)
+        datasets, "rq12", [VectorDist.mann, VectorDist.euclid], lambda distance: CodeDistOrder(distance=distance)
     )
 
+
+    # (RQ1.3) How does the choice of aggregation function affect CodeDistOrder's effectiveness?
     run_subquestion(
         datasets,
-        "rq14",
+        "rq13",
         [GroupAgg.min, GroupAgg.avg, GroupAgg.max],
         lambda aggregation: CodeDistOrder(aggregation=aggregation),
     )
 
-    run_subquestion(datasets, "rq15", [0, 1, 3, 5], lambda fail_adapt: CodeDistOrder(fail_adapt=fail_adapt))
+
+    # (RQ1.4) How does the choice of failure adaptation affect CodeDistOrder's effectiveness?
+    run_subquestion(datasets, "rq14", [0, 1, 3, 5], lambda fail_adapt: CodeDistOrder(fail_adapt=fail_adapt))
