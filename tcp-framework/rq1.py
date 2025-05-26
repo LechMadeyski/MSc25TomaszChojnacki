@@ -44,7 +44,6 @@ if __name__ == "__main__":
         ]
     ]
 
-
     # (RQ1.1) How does the choice of normalization type affect CodeDistOrder's effectiveness?
     run_subquestion(
         datasets,
@@ -53,12 +52,10 @@ if __name__ == "__main__":
         lambda normalization: CodeDistOrder(StVectorizer(normalization=normalization)),
     )
 
-
     # (RQ1.2) How does the choice of vector distance affect CodeDistOrder's effectiveness?
     run_subquestion(
         datasets, "rq12", [VectorDist.mann, VectorDist.euclid], lambda distance: CodeDistOrder(distance=distance)
     )
-
 
     # (RQ1.3) How does the choice of aggregation function affect CodeDistOrder's effectiveness?
     run_subquestion(
@@ -67,7 +64,6 @@ if __name__ == "__main__":
         [GroupAgg.min, GroupAgg.avg, GroupAgg.max],
         lambda aggregation: CodeDistOrder(aggregation=aggregation),
     )
-
 
     # (RQ1.4) How does the choice of failure adaptation affect CodeDistOrder's effectiveness?
     run_subquestion(datasets, "rq14", [0, 1, 3, 5], lambda fail_adapt: CodeDistOrder(fail_adapt=fail_adapt))

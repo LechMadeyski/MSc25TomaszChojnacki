@@ -3,8 +3,7 @@
 from pathlib import Path
 
 from tcp_framework import Dataset, dump_results, evaluate
-from tcp_framework.approaches import FoldFailsOrder, ExeTimeOrder, BordaMixedOrder, RandomMixedOrder, SchulzeMixedOrder
-
+from tcp_framework.approaches import BordaMixedOrder, ExeTimeOrder, FoldFailsOrder, RandomMixedOrder, SchulzeMixedOrder
 
 if __name__ == "__main__":
     cycle_map = Dataset.preload_cycle_map(Path("./datasets/travistorrent_8_2_2017.csv"), debug=True)
@@ -26,25 +25,23 @@ if __name__ == "__main__":
         ]
     ]
 
-
-    # (RQ2.1) Can mixers beat their sub-approaches in terms of effectiveness? 
-    print(f"=== rq21 ===")
+    # (RQ2.1) Can mixers beat their sub-approaches in terms of effectiveness?
+    print("=== rq21 ===")
     approaches = [
         FoldFailsOrder(),
         ExeTimeOrder(),
-        BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
-        RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
-        SchulzeMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.9, 0.1]),
+        BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
+        RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
+        SchulzeMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
     ]
     for dataset in datasets:
         results = evaluate(
             approaches,
             dataset,
-            ["rAPFD"],
+            ["rAPFDc"],
             debug=1,
         )
-        dump_results(Path(f"./out/rq21.json"), dataset.name, [r.r_apfd_list for r in results])
-
+        dump_results(Path("./out/rq21.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     # (RQ2.2) Can interpolators beat their sub-approaches in terms of effectiveness?
     # print(f"=== {filename} ===")
@@ -57,7 +54,6 @@ if __name__ == "__main__":
     #         debug=1,
     #     )
     #     dump_results(Path(f"./out/{filename}.json"), dataset.name, [r.r_apfd_list for r in results])
-
 
     # (RQ2.3) Can tiebreakers beat their base approach in terms of effectiveness?
     # print(f"=== {filename} ===")
