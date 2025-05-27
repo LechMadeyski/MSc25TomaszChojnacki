@@ -64,6 +64,3 @@ if __name__ == "__main__":
         [GroupAgg.min, GroupAgg.avg, GroupAgg.max],
         lambda aggregation: CodeDistOrder(aggregation=aggregation),
     )
-
-    # (RQ1.4) How does the choice of failure adaptation affect CodeDistOrder's effectiveness?
-    run_subquestion(datasets, "rq14", [0, 1, 3, 5], lambda fail_adapt: CodeDistOrder(fail_adapt=fail_adapt))
