@@ -27,7 +27,6 @@ if __name__ == "__main__":
             "optiq",
             "cloudify",
             "okhttp",
-            "graylog2-server",
         ]
     ]
 
