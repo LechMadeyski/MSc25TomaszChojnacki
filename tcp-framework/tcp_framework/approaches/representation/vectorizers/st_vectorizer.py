@@ -5,12 +5,11 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from ..utils.parser import extract_code_identifiers, normalize_code
-from .code_vectorizer import CodeVectorizer
 
 type Normalization = Literal["formatting", "identifiers"] | None
 
 
-class StVectorizer(CodeVectorizer):
+class StVectorizer:
     default: "StVectorizer"
 
     # Salesforce/SFR-Embedding-Code-400M_R, intfloat/e5-base-v2, BAAI/bge-base-en-v1.5, microsoft/unixcoder-base

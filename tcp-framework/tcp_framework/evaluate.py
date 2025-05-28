@@ -1,6 +1,5 @@
 import time
 from collections.abc import Sequence
-from typing import Literal
 
 from tqdm import tqdm
 
@@ -8,9 +7,7 @@ from .approaches import Approach
 from .dataset import Dataset
 from .datatypes import RunContext
 from .deep import flatten
-from .metric_calc import MetricCalc
-
-type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR", "ATR"]
+from .metric_calc import MetricCalc, MetricResultSet, SupportedMetric
 
 
 def _print_metrics(calcs: Sequence[MetricCalc], metrics: Sequence[SupportedMetric], trailer: str = "") -> None:
@@ -48,13 +45,13 @@ def evaluate(
     metrics: Sequence[SupportedMetric] | None = None,
     *,
     debug: int = 0,
-) -> list[MetricCalc]:
+) -> Sequence[MetricResultSet]:
     if not metrics:
         metrics = []
     for approach in approaches:
         approach.reset()
 
-    calcs = [MetricCalc(min_cases=6) for _ in approaches]
+    calcs = [MetricCalc(min_cases=6, curated_metrics=metrics) for _ in approaches]
 
     cycles = dataset.cycles(debug=debug > 1)
 
@@ -77,3 +74,13 @@ def evaluate(
         _print_metrics(calcs, metrics, trailer=dataset.name)
 
     return calcs
+
+
+def evaluate_one(
+    approach: Approach,
+    dataset: Dataset,
+    metrics: Sequence[SupportedMetric] | None = None,
+    *,
+    debug: int = 0,
+) -> MetricResultSet:
+    return evaluate([approach], dataset, metrics, debug=debug)[0]

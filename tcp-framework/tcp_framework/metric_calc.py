@@ -1,9 +1,49 @@
 from collections.abc import Sequence
+from typing import Literal, Protocol
 
 from .datatypes import TestInfo, TestResult
 from .deep import deep_map
 
 EPSILON = 1e-6
+
+type SupportedMetric = Literal["APFD", "rAPFD", "APFDc", "rAPFDc", "RPA", "NRPA", "NTR", "ATR"]
+
+
+class MetricResultSet(Protocol):
+    @property
+    def failed_cycles(self) -> int: ...
+    @property
+    def apfd_avg(self) -> float: ...
+    @property
+    def apfd_list(self) -> list[float]: ...
+    @property
+    def r_apfd_avg(self) -> float: ...
+    @property
+    def r_apfd_list(self) -> list[float]: ...
+    @property
+    def apfd_c_avg(self) -> float: ...
+    @property
+    def apfd_c_list(self) -> list[float]: ...
+    @property
+    def r_apfd_c_avg(self) -> float: ...
+    @property
+    def r_apfd_c_list(self) -> list[float]: ...
+    @property
+    def rpa_avg(self) -> float: ...
+    @property
+    def rpa_list(self) -> list[float]: ...
+    @property
+    def nrpa_avg(self) -> float: ...
+    @property
+    def nrpa_list(self) -> list[float]: ...
+    @property
+    def ntr_val(self) -> float: ...
+    @property
+    def atr_val(self) -> float: ...
+    @property
+    def atr_approach_total_s(self) -> float: ...
+    @property
+    def atr_base_total_s(self) -> float: ...
 
 
 class MetricCalc:
@@ -128,8 +168,11 @@ class MetricCalc:
             return float("nan")
         return sum(values) / len(values)
 
-    def __init__(self, min_cases: int = 1) -> None:
+    def __init__(self, *, min_cases: int = 1, curated_metrics: Sequence[SupportedMetric] | None = None) -> None:
         self._min_cases = min_cases  # Bagherzadeh 2021
+        self._curated_metrics = curated_metrics
+
+        self.failed_cycles: int = 0
         self._all_apfd: list[float] = []
         self._all_r_apfd: list[float] = []
         self._all_apfd_c: list[float] = []
@@ -140,6 +183,9 @@ class MetricCalc:
         self._ntr_denom_sum = 0.0
         self._atr_nom_sum = 0.0
         self._atr_denom_sum = 0.0
+
+    def _on(self, metric: SupportedMetric) -> bool:
+        return self._curated_metrics is None or metric in self._curated_metrics
 
     def include_group(
         self,
@@ -155,25 +201,34 @@ class MetricCalc:
         if len(base_r) < self._min_cases:
             return
 
-        self._all_rpa.append(self._avg([self.rpa(ordered_r) for ordered_r in ordered_r_group]))
-        self._all_nrpa.append(self._avg([self.nrpa(ordered_r) for ordered_r in ordered_r_group]))
-        self._atr_nom_sum += self._avg(
-            [
-                self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
-                for ordered_r, tcp_time_s in zip(ordered_r_group, tcp_time_s_group, strict=True)
-            ]
-        )
-        self._atr_denom_sum += self._atr_cycle_time(base_r, build_time_s=build_time_s, tcp_time_s=0.0)
+        if self._on("RPA"):
+            self._all_rpa.append(self._avg([self.rpa(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("NRPA"):
+            self._all_nrpa.append(self._avg([self.nrpa(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("ATR"):
+            self._atr_nom_sum += self._avg(
+                [
+                    self._atr_cycle_time(ordered_r, build_time_s=build_time_s, tcp_time_s=tcp_time_s)
+                    for ordered_r, tcp_time_s in zip(ordered_r_group, tcp_time_s_group, strict=True)
+                ]
+            )
+            self._atr_denom_sum += self._atr_cycle_time(base_r, build_time_s=build_time_s, tcp_time_s=0.0)
 
         if not any(tr.fails > 0 for tr in base_r):
             return
 
-        self._all_apfd.append(self._avg([self.apfd(ordered_r) for ordered_r in ordered_r_group]))
-        self._all_r_apfd.append(self._avg([self.r_apfd(ordered_r) for ordered_r in ordered_r_group]))
-        self._all_apfd_c.append(self._avg([self.apfd_c(ordered_r) for ordered_r in ordered_r_group]))
-        self._all_r_apfd_c.append(self._avg([self.r_apfd_c(ordered_r) for ordered_r in ordered_r_group]))
-        self._ntr_nom_sum += self._avg([self._ntr_nom(ordered_r) for ordered_r in ordered_r_group])
-        self._ntr_denom_sum += self._avg([self._ntr_denom(ordered_r) for ordered_r in ordered_r_group])
+        self.failed_cycles += 1
+        if self._on("APFD"):
+            self._all_apfd.append(self._avg([self.apfd(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("rAPFD"):
+            self._all_r_apfd.append(self._avg([self.r_apfd(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("APFDc"):
+            self._all_apfd_c.append(self._avg([self.apfd_c(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("rAPFDc"):
+            self._all_r_apfd_c.append(self._avg([self.r_apfd_c(ordered_r) for ordered_r in ordered_r_group]))
+        if self._on("NTR"):
+            self._ntr_nom_sum += self._avg([self._ntr_nom(ordered_r) for ordered_r in ordered_r_group])
+            self._ntr_denom_sum += self._avg([self._ntr_denom(ordered_r) for ordered_r in ordered_r_group])
 
     def include(
         self, *, ordered: Sequence[TestInfo], base: Sequence[TestInfo], build_time_s: float, tcp_time_s: float
@@ -184,10 +239,6 @@ class MetricCalc:
             build_time_s=build_time_s,
             tcp_time_s_group=[tcp_time_s],
         )
-
-    @property
-    def failed_cycles(self) -> int:
-        return len(self._all_apfd)
 
     @property
     def apfd_avg(self) -> float:

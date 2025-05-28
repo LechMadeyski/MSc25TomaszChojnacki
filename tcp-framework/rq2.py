@@ -4,11 +4,15 @@ from pathlib import Path
 
 from tcp_framework import Dataset, dump_results, evaluate
 from tcp_framework.approaches import (
+    BordaMixedOrder,
     CodeDistBreakedOrder,
     CodeDistOrder,
     ExeTimeOrder,
+    FailDensityOrder,
     FoldFailsOrder,
     GenericBreakedOrder,
+    InterpolatedOrder,
+    RecentnessOrder,
 )
 
 if __name__ == "__main__":
@@ -49,16 +53,21 @@ if __name__ == "__main__":
     #     dump_results(Path("./out/rq21.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     # (RQ2.2) Can interpolators beat their sub-approaches in terms of effectiveness?
-    # print(f"=== {filename} ===")
-    # approaches = [factory(option) for option in options]
-    # for dataset in datasets:
-    #     results = evaluate(
-    #         approaches,
-    #         dataset,
-    #         ["rAPFDc"],
-    #         debug=1,
-    #     )
-    #     dump_results(Path(f"./out/{filename}.json"), dataset.name, [r.r_apfd_c_list for r in results])
+    print("=== rq22 ===")
+    approaches = [
+        ExeTimeOrder(),
+        RecentnessOrder(),
+        FailDensityOrder(),
+        InterpolatedOrder(BordaMixedOrder([ExeTimeOrder(), RecentnessOrder()]), 5, FailDensityOrder(), mode="failed"),
+    ]
+    for dataset in datasets:
+        results = evaluate(
+            approaches,
+            dataset,
+            ["rAPFDc"],
+            debug=1,
+        )
+        dump_results(Path("./out/rq22.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     # (RQ2.3) Can tiebreakers beat their base approach in terms of effectiveness?
     print("=== rq23 ===")
