@@ -12,7 +12,9 @@ from tcp_framework.approaches import (
     FoldFailsOrder,
     GenericBreakedOrder,
     InterpolatedOrder,
+    RandomMixedOrder,
     RecentnessOrder,
+    SchulzeMixedOrder,
 )
 
 if __name__ == "__main__":
@@ -35,22 +37,56 @@ if __name__ == "__main__":
     ]
 
     # (RQ2.1) Can mixers beat their sub-approaches in terms of effectiveness?
-    # print("=== rq21 ===")
-    # approaches = [
-    #     FoldFailsOrder(),
-    #     ExeTimeOrder(),
-    #     BordaMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
-    #     RandomMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
-    #     SchulzeMixedOrder([FoldFailsOrder(), ExeTimeOrder()], [0.6, 0.4]),
-    # ]
-    # for dataset in datasets:
-    #     results = evaluate(
-    #         approaches,
-    #         dataset,
-    #         ["rAPFDc"],
-    #         debug=1,
-    #     )
-    #     dump_results(Path("./out/rq21.json"), dataset.name, [r.r_apfd_c_list for r in results])
+    print("=== rq21 ===")
+    approaches = [
+        FoldFailsOrder(seed=None),
+        RecentnessOrder(latest_only=True),
+        ExeTimeOrder(),
+        BordaMixedOrder(
+            [
+                FoldFailsOrder(seed=None),
+                RecentnessOrder(latest_only=True),
+                ExeTimeOrder(),
+            ],
+            [
+                1,
+                1,
+                0.5,
+            ],
+        ),
+        RandomMixedOrder(
+            [
+                FoldFailsOrder(seed=None),
+                RecentnessOrder(latest_only=True),
+                ExeTimeOrder(),
+            ],
+            [
+                1,
+                1,
+                0.5,
+            ],
+        ),
+        SchulzeMixedOrder(
+            [
+                FoldFailsOrder(seed=None),
+                RecentnessOrder(latest_only=True),
+                ExeTimeOrder(),
+            ],
+            [
+                1,
+                1,
+                0.5,
+            ],
+        ),
+    ]
+    for dataset in datasets:
+        results = evaluate(
+            approaches,
+            dataset,
+            ["rAPFDc"],
+            debug=1,
+        )
+        dump_results(Path("./out/rq21.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     # (RQ2.2) Can interpolators beat their sub-approaches in terms of effectiveness?
     print("=== rq22 ===")
