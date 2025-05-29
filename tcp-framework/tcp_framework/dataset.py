@@ -102,9 +102,10 @@ class Dataset:
         fail = sum(1 for c in data if c.is_failed) / cycles
         tests = sum(len(c.tests) for c in data) / cycles
         total_time_h = round(sum(c.cycle_time_s for c in data) / 3600)
+        time_per_cycle_min = round(sum(c.cycle_time_s for c in data) / cycles / 60)
         name = self._cycles_path.stem
         print(
-            f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests, {total_time_h: >6} hours"
+            f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests, {total_time_h: >6} hours, {time_per_cycle_min: >3} min/cycle"
         )
 
     def cycles(self, *, debug: bool = False) -> list[Cycle]:

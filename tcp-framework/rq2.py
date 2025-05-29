@@ -43,40 +43,16 @@ if __name__ == "__main__":
         RecentnessOrder(latest_only=True),
         ExeTimeOrder(),
         BordaMixedOrder(
-            [
-                FoldFailsOrder(seed=None),
-                RecentnessOrder(latest_only=True),
-                ExeTimeOrder(),
-            ],
-            [
-                1,
-                1,
-                0.5,
-            ],
+            [FoldFailsOrder(seed=None), RecentnessOrder(latest_only=True), ExeTimeOrder()],
+            [1, 1, 0.5],
         ),
         RandomMixedOrder(
-            [
-                FoldFailsOrder(seed=None),
-                RecentnessOrder(latest_only=True),
-                ExeTimeOrder(),
-            ],
-            [
-                1,
-                1,
-                0.5,
-            ],
+            [FoldFailsOrder(seed=None), RecentnessOrder(latest_only=True), ExeTimeOrder()],
+            [1, 1, 0.5],
         ),
         SchulzeMixedOrder(
-            [
-                FoldFailsOrder(seed=None),
-                RecentnessOrder(latest_only=True),
-                ExeTimeOrder(),
-            ],
-            [
-                1,
-                1,
-                0.5,
-            ],
+            [FoldFailsOrder(seed=None), RecentnessOrder(latest_only=True), ExeTimeOrder()],
+            [1, 1, 0.5],
         ),
     ]
     for dataset in datasets:
