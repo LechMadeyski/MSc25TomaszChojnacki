@@ -9,6 +9,7 @@ from .combinator import RandomMixedOrder as RandomMixedOrder
 from .combinator import SchulzeMixedOrder as SchulzeMixedOrder
 from .combinator import SimilarityBreakedOrder as SimilarityBreakedOrder
 from .history import ExeTimeOrder as ExeTimeOrder
+from .history import F2009Order as F2009Order
 from .history import FailDensityOrder as FailDensityOrder
 from .history import FoldFailsOrder as FoldFailsOrder
 from .history import RecentnessOrder as RecentnessOrder

@@ -105,7 +105,7 @@ class Dataset:
         time_per_cycle_min = round(sum(c.cycle_time_s for c in data) / cycles / 60)
         name = self._cycles_path.stem
         print(
-            f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests, {total_time_h: >6} hours, {time_per_cycle_min: >3} min/cycle"
+            f"{name[:16]: >16}: {cycles: >6} cycles, {fail:>6.1%} fail, {tests:>6.1f} tests, {total_time_h: >6} hours, {time_per_cycle_min: >3} min/cycle"  # noqa: E501
         )
 
     def cycles(self, *, debug: bool = False) -> list[Cycle]:

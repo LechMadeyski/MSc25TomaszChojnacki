@@ -10,8 +10,9 @@ EPSILON = 1e-6
 
 
 class FailDensityOrder(Approach):
-    def __init__(self, alpha: float = 0.8) -> None:
-        self._alpha = alpha
+    def __init__(self, alpha_fails: float = 0.8, alpha_times: float = 0.8) -> None:
+        self._alpha_fails = alpha_fails
+        self._alpha_times = alpha_times
         self._fails: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
         self._times: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
 
@@ -28,8 +29,12 @@ class FailDensityOrder(Approach):
     @override
     def on_static_feedback(self, test_infos: Sequence[TestInfo]) -> None:
         for ti in test_infos:
-            self._fails[ti.case] = self._alpha * ti.result.fails + (1.0 - self._alpha) * self._fails[ti.case]
-            self._times[ti.case] = self._alpha * ti.result.time_s + (1.0 - self._alpha) * self._times[ti.case]
+            self._fails[ti.case] = (
+                self._alpha_fails * ti.result.fails + (1.0 - self._alpha_fails) * self._fails[ti.case]
+            )
+            self._times[ti.case] = (
+                self._alpha_times * ti.result.time_s + (1.0 - self._alpha_times) * self._times[ti.case]
+            )
 
     @override
     def reset(self) -> None:
