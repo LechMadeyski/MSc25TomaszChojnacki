@@ -38,20 +38,20 @@ if __name__ == "__main__":
         ]
     ]
 
-    # print("=== baselines ===")
-    # approaches: list[Approach] = [
-    #     BaseOrder(),
-    #     NameDispersityOrder(),
-    #     RandomOrder(),
-    #     F2009Order(),
-    #     FoldFailsOrder(),
-    #     FailDensityOrder(),
-    #     RocketOrder(100),
-    #     RocketOrder(1000),
-    # ]
-    # for dataset in datasets:
-    #     results = evaluate(approaches, dataset, ["rAPFDc"], debug=1)
-    #     dump_results(Path("./out/rq3-base.json"), dataset.name, [r.r_apfd_c_list for r in results])
+    print("=== baselines ===")
+    approaches: list[Approach] = [
+        BaseOrder(),
+        NameDispersityOrder(),
+        RandomOrder(),
+        F2009Order(),
+        FoldFailsOrder(),
+        FailDensityOrder(),
+        RocketOrder(100),
+        RocketOrder(1000),
+    ]
+    for dataset in datasets:
+        results = evaluate(approaches, dataset, ["rAPFDc"], debug=1)
+        dump_results(Path("./out/rq3-base.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     print("=== final ===")
     approaches = [
