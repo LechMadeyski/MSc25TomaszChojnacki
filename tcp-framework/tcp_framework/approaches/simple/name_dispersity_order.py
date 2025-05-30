@@ -10,7 +10,7 @@ class NameDispersityOrder(Approach):
     Original: https://doi.org/10.1109/TR.2020.2979815
     """
 
-    def __init__(self, *, memory: int = 10, candidates: int = 10, alphabetic: bool = False, seed: int = 0) -> None:
+    def __init__(self, *, memory: int = 10, candidates: int = 10, alphabetic: bool = True, seed: int = 0) -> None:
         self._memory = memory
         self._candidates = candidates
         self._alphabetic = alphabetic

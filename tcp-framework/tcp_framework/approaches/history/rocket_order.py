@@ -18,7 +18,7 @@ class RocketOrder(Approach):
     Original: https://doi.org/10.1109/icsm.2013.91
     """
 
-    def __init__(self, m: int = 100, *, alpha_exe: float = 0.4) -> None:
+    def __init__(self, m: int = 1000, *, alpha_exe: float = 0.4) -> None:
         assert m > 0, "m must be a positive integer"
         assert 0.0 <= alpha_exe <= 1.0, "alpha_exe must be in the range [0, 1]"
 
