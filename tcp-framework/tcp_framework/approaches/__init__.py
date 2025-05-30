@@ -13,6 +13,8 @@ from .history import F2009Order as F2009Order
 from .history import FailDensityOrder as FailDensityOrder
 from .history import FoldFailsOrder as FoldFailsOrder
 from .history import RecentnessOrder as RecentnessOrder
+from .history import RocketOrder as RocketOrder
 from .representation import CodeDistOrder as CodeDistOrder
 from .representation import SimilarityOrder as SimilarityOrder
+from .simple import NameDispersityOrder as NameDispersityOrder
 from .simple import TestLocOrder as TestLocOrder

@@ -17,6 +17,7 @@ class CodeDistOrder(Approach):
         vectorizer: CodeVectorizer = StVectorizer.default,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
+        *,
         fail_adapt: int = 0,
     ) -> None:
         self._vectorizer = vectorizer

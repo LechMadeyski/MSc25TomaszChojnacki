@@ -17,7 +17,7 @@ class BordaMixedOrder(MixedOrder):
 
     @override
     def merge_queues(self, queues: list[Ordering]) -> Ordering:
-        borda: defaultdict[TestCase, float] = defaultdict(lambda: 0.0)
+        borda: defaultdict[TestCase, float] = defaultdict(float)
         for qi, queue in enumerate(queues):
             ti = 0
             size = deep_len(queue)

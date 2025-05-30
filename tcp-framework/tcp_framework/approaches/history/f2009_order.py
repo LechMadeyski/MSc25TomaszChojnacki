@@ -14,7 +14,11 @@ class F2009Order(Approach):
     Original: https://doi.org/10.1007/978-3-642-02949-3_5
     """
 
-    def __init__(self, alpha: float = 0.04, beta: float = 0.7, gamma: float = 0.7, seed: int = 0) -> None:
+    def __init__(self, *, alpha: float = 0.04, beta: float = 0.7, gamma: float = 0.7, seed: int = 0) -> None:
+        assert alpha >= 0.0, "alpha must be non-negative"
+        assert beta >= 0.0, "beta must be non-negative"
+        assert gamma >= 0.0, "gamma must be non-negative"
+
         self._alpha = alpha
         self._beta = beta
         self._gamma = gamma

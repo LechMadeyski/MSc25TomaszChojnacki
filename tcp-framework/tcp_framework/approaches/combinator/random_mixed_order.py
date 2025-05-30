@@ -13,7 +13,7 @@ class RandomMixedOrder(MixedOrder):
     Proposed.
     """
 
-    def __init__(self, targets: Sequence[Approach], weights: list[float] | None = None, seed: int = 0) -> None:
+    def __init__(self, targets: Sequence[Approach], weights: list[float] | None = None, *, seed: int = 0) -> None:
         super().__init__(targets, weights)
         self._seed = seed
         self._rng = Random(seed)
