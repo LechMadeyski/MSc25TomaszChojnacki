@@ -68,3 +68,6 @@ ignore = [
     "TID252",
     "TRY003",
 ]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

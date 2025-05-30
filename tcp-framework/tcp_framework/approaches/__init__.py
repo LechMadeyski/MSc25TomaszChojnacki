@@ -1,20 +1,21 @@
 from .approach import Approach as Approach
-from .baseline import BaseOrder as BaseOrder
-from .baseline import RandomOrder as RandomOrder
-from .combinator import BordaMixedOrder as BordaMixedOrder
-from .combinator import CodeDistBreakedOrder as CodeDistBreakedOrder
-from .combinator import GenericBreakedOrder as GenericBreakedOrder
-from .combinator import InterpolatedOrder as InterpolatedOrder
-from .combinator import RandomMixedOrder as RandomMixedOrder
-from .combinator import SchulzeMixedOrder as SchulzeMixedOrder
-from .combinator import SimilarityBreakedOrder as SimilarityBreakedOrder
-from .history import ExeTimeOrder as ExeTimeOrder
-from .history import F2009Order as F2009Order
-from .history import FailDensityOrder as FailDensityOrder
-from .history import FoldFailsOrder as FoldFailsOrder
-from .history import RecentnessOrder as RecentnessOrder
-from .history import RocketOrder as RocketOrder
-from .representation import CodeDistOrder as CodeDistOrder
-from .representation import SimilarityOrder as SimilarityOrder
-from .simple import NameDispersityOrder as NameDispersityOrder
-from .simple import TestLocOrder as TestLocOrder
+from .baseline import BaseOrder as BaseOrder, RandomOrder as RandomOrder
+from .combinator import (
+    BordaMixedOrder as BordaMixedOrder,
+    CodeDistBreakedOrder as CodeDistBreakedOrder,
+    GenericBreakedOrder as GenericBreakedOrder,
+    InterpolatedOrder as InterpolatedOrder,
+    RandomMixedOrder as RandomMixedOrder,
+    SchulzeMixedOrder as SchulzeMixedOrder,
+    SimilarityBreakedOrder as SimilarityBreakedOrder,
+)
+from .history import (
+    ExeTimeOrder as ExeTimeOrder,
+    F2009Order as F2009Order,
+    FailDensityOrder as FailDensityOrder,
+    FoldFailsOrder as FoldFailsOrder,
+    RecentnessOrder as RecentnessOrder,
+    RocketOrder as RocketOrder,
+)
+from .representation import CodeDistOrder as CodeDistOrder, SimilarityOrder as SimilarityOrder
+from .simple import NameDispersityOrder as NameDispersityOrder, TestLocOrder as TestLocOrder
