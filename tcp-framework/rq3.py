@@ -38,20 +38,20 @@ if __name__ == "__main__":
         ]
     ]
 
-    print("=== baselines ===")
-    approaches: list[Approach] = [
-        BaseOrder(),
-        NameDispersityOrder(),
-        RandomOrder(),
-        F2009Order(),
-        FoldFailsOrder(),
-        FailDensityOrder(),
-        RocketOrder(100),
-        RocketOrder(1000),
-    ]
-    for dataset in datasets:
-        results = evaluate(approaches, dataset, ["rAPFDc"], debug=1)
-        dump_results(Path("./out/rq3-base.json"), dataset.name, [r.r_apfd_c_list for r in results])
+    # print("=== baselines ===")
+    # approaches: list[Approach] = [
+    #     BaseOrder(),
+    #     NameDispersityOrder(),
+    #     RandomOrder(),
+    #     F2009Order(),
+    #     FoldFailsOrder(),
+    #     FailDensityOrder(),
+    #     RocketOrder(100),
+    #     RocketOrder(1000),
+    # ]
+    # for dataset in datasets:
+    #     results = evaluate(approaches, dataset, ["rAPFDc"], debug=1)
+    #     dump_results(Path("./out/rq3-base.json"), dataset.name, [r.r_apfd_c_list for r in results])
 
     print("=== final ===")
     approaches = [
@@ -70,3 +70,4 @@ if __name__ == "__main__":
         dump_results(Path("./out/rq3-rapfdc.json"), dataset.name, [r.r_apfd_c_list for r in results])
         dump_results(Path("./out/rq3-ntr.json"), dataset.name, [[r.ntr_val] for r in results])
         dump_results(Path("./out/rq3-atr.json"), dataset.name, [[r.atr_val] for r in results])
+        print("    " + " | ".join([f"{round(r.atr_total_gain_s)}s" for r in results]))

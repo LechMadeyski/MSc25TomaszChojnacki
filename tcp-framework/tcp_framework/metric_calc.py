@@ -44,6 +44,8 @@ class MetricResultSet(Protocol):
     def atr_approach_total_s(self) -> float: ...
     @property
     def atr_base_total_s(self) -> float: ...
+    @property
+    def atr_total_gain_s(self) -> float: ...
 
 
 class MetricCalc:
@@ -303,3 +305,7 @@ class MetricCalc:
     @property
     def atr_base_total_s(self) -> float:
         return self._atr_denom_sum
+
+    @property
+    def atr_total_gain_s(self) -> float:
+        return self.atr_base_total_s - self.atr_approach_total_s
