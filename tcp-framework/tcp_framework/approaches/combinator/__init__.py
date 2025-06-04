@@ -1,7 +1,7 @@
 from .borda_mixed_order import BordaMixedOrder as BordaMixedOrder
-from .code_dist_breaked_order import CodeDistBreakedOrder as CodeDistBreakedOrder
-from .generic_breaked_order import GenericBreakedOrder as GenericBreakedOrder
+from .code_dist_broken_order import CodeDistBrokenOrder as CodeDistBrokenOrder
+from .generic_broken_order import GenericBrokenOrder as GenericBrokenOrder
 from .interpolated_order import InterpolatedOrder as InterpolatedOrder
 from .random_mixed_order import RandomMixedOrder as RandomMixedOrder
 from .schulze_mixed_order import SchulzeMixedOrder as SchulzeMixedOrder
-from .similarity_breaked_order import SimilarityBreakedOrder as SimilarityBreakedOrder
+from .similarity_broken_order import SimilarityBrokenOrder as SimilarityBrokenOrder

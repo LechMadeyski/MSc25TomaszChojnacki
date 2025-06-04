@@ -11,7 +11,7 @@ from tcp_framework.approaches import (
     F2009Order,
     FailDensityOrder,
     FoldFailsOrder,
-    GenericBreakedOrder,
+    GenericBrokenOrder,
     InterpolatedOrder,
     NameDispersityOrder,
     RandomOrder,
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             [1, 1, 0.5],
         ),
         InterpolatedOrder(BordaMixedOrder([ExeTimeOrder(), RecentnessOrder()]), 5, FailDensityOrder(), mode="failed"),
-        GenericBreakedOrder(target=FoldFailsOrder("total", seed=None), breaker=ExeTimeOrder()),
+        GenericBrokenOrder(target=FoldFailsOrder("total", seed=None), breaker=ExeTimeOrder()),
     ]
     for dataset in datasets:
         results = evaluate(approaches, dataset, ["rAPFDc", "NTR", "ATR"], debug=1)

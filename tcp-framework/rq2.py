@@ -5,12 +5,12 @@ from pathlib import Path
 from tcp_framework import Dataset, dump_results, evaluate
 from tcp_framework.approaches import (
     BordaMixedOrder,
-    CodeDistBreakedOrder,
+    CodeDistBrokenOrder,
     CodeDistOrder,
     ExeTimeOrder,
     FailDensityOrder,
     FoldFailsOrder,
-    GenericBreakedOrder,
+    GenericBrokenOrder,
     InterpolatedOrder,
     RandomMixedOrder,
     RecentnessOrder,
@@ -87,8 +87,8 @@ if __name__ == "__main__":
         FoldFailsOrder("total", seed=None),
         ExeTimeOrder(),
         CodeDistOrder(),
-        GenericBreakedOrder(target=FoldFailsOrder("total", seed=None), breaker=ExeTimeOrder()),
-        CodeDistBreakedOrder(target=FoldFailsOrder("total", seed=None)),
+        GenericBrokenOrder(target=FoldFailsOrder("total", seed=None), breaker=ExeTimeOrder()),
+        CodeDistBrokenOrder(target=FoldFailsOrder("total", seed=None)),
     ]
     for dataset in datasets:
         results = evaluate(

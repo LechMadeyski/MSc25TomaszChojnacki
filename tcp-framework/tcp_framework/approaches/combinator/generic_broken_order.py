@@ -5,7 +5,7 @@ from ...datatypes import RunContext, TestInfo
 from ..approach import Approach
 
 
-class GenericBreakedOrder(Approach):
+class GenericBrokenOrder(Approach):
     """
     Proposed.
     """

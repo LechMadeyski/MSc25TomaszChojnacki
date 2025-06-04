@@ -2,12 +2,12 @@ from .approach import Approach as Approach
 from .baseline import BaseOrder as BaseOrder, RandomOrder as RandomOrder
 from .combinator import (
     BordaMixedOrder as BordaMixedOrder,
-    CodeDistBreakedOrder as CodeDistBreakedOrder,
-    GenericBreakedOrder as GenericBreakedOrder,
+    CodeDistBrokenOrder as CodeDistBrokenOrder,
+    GenericBrokenOrder as GenericBrokenOrder,
     InterpolatedOrder as InterpolatedOrder,
     RandomMixedOrder as RandomMixedOrder,
     SchulzeMixedOrder as SchulzeMixedOrder,
-    SimilarityBreakedOrder as SimilarityBreakedOrder,
+    SimilarityBrokenOrder as SimilarityBrokenOrder,
 )
 from .history import (
     ExeTimeOrder as ExeTimeOrder,

@@ -1,13 +1,12 @@
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from typing import override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
-from ..representation import GroupAgg, lccss
-from ..representation.utils import normalize_code
+from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
 
 
-class SimilarityBreakedOrder(Approach):
+class CodeDistBrokenOrder(Approach):
     """
     Proposed.
     """
@@ -15,18 +14,24 @@ class SimilarityBreakedOrder(Approach):
     def __init__(
         self,
         target: Approach,
-        similarity: Callable[[str, str], int] = lccss,
+        vectorizer: CodeVectorizer = StVectorizer.default,
+        distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
+        *,
+        switching: bool = True,
     ) -> None:
         self._target = target
-        self._similarity = similarity
+        self._vectorizer = vectorizer
+        self._distance = distance
         self._aggregation = aggregation
+        self._switching = switching
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
+        distance = LazyCodeDistMap(ctx, self._vectorizer, self._distance)
+
         clusters = self._target.get_dry_ordering(ctx)
 
-        codes = {tc: normalize_code(ctx.inspect_code(tc)) for tc in ctx.test_cases}
         prioritized: set[TestCase] = set()
 
         for cluster in clusters:
@@ -43,18 +48,16 @@ class SimilarityBreakedOrder(Approach):
             if not prioritized:
                 target = max(
                     cluster,
-                    key=lambda tc1: self._aggregation(
-                        -self._similarity(codes[tc1], codes[tc2]) for tc2 in cluster if tc1 != tc2
-                    ),
+                    key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in cluster if tc1 != tc2),
                 )
                 select(target)
 
-            optimum = min if len(prioritized) < len(ctx.test_cases) * 0.5 else max
+            optimum = min if self._switching and len(prioritized) < len(ctx.test_cases) * 0.5 else max
 
             while cluster:
                 target = optimum(
                     cluster,
-                    key=lambda tc1: self._aggregation(-self._similarity(codes[tc1], codes[tc2]) for tc2 in prioritized),
+                    key=lambda tc1: self._aggregation(distance(tc1, tc2) for tc2 in prioritized),
                 )
                 select(target)
 
