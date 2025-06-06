@@ -1,11 +1,12 @@
-from typing import Sequence, override
+from collections.abc import Sequence
+from typing import override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
 from ..representation import CodeVectorizer, GroupAgg, LazyCodeDistMap, StVectorizer, VectorDist
 
 
-class CodeDistBreakedOrder(Approach):
+class CodeDistBrokenOrder(Approach):
     """
     Proposed.
     """
@@ -13,14 +14,17 @@ class CodeDistBreakedOrder(Approach):
     def __init__(
         self,
         target: Approach,
-        vectorizer: CodeVectorizer = StVectorizer(),
+        vectorizer: CodeVectorizer = StVectorizer.default,
         distance: VectorDist = VectorDist.euclid,
         aggregation: GroupAgg = GroupAgg.min,
+        *,
+        switching: bool = True,
     ) -> None:
         self._target = target
         self._vectorizer = vectorizer
         self._distance = distance
         self._aggregation = aggregation
+        self._switching = switching
 
     @override
     def prioritize(self, ctx: RunContext) -> None:
@@ -32,7 +36,7 @@ class CodeDistBreakedOrder(Approach):
 
         for cluster in clusters:
 
-            def select(target: TestCase) -> None:
+            def select(target: TestCase, cluster: list[TestCase] = cluster) -> None:
                 cluster.remove(target)
                 prioritized.add(target)
                 ctx.execute(target)
@@ -48,7 +52,7 @@ class CodeDistBreakedOrder(Approach):
                 )
                 select(target)
 
-            optimum = min if len(prioritized) < len(ctx.test_cases) * 0.5 else max
+            optimum = min if self._switching and len(prioritized) < len(ctx.test_cases) * 0.5 else max
 
             while cluster:
                 target = optimum(

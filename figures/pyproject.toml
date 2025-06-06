@@ -3,10 +3,16 @@ name = "figures"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "criticaldifferencediagrams-jl",
     "matplotlib>=3.10.3",
+    "pandas>=2.3.0",
+    "setuptools>=80.9.0",
 ]
 
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
 ]
+
+[tool.uv.sources]
+criticaldifferencediagrams-jl = { url = "https://github.com/mirkobunse/CriticalDifferenceDiagrams.jl/archive/py.tar.gz" }

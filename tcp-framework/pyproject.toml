@@ -3,9 +3,7 @@ name = "tcp-framework"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "bayesian-optimization>=2.0.3",
     "gitpython>=3.1.44",
-    "matplotlib>=3.10.1",
     "pandas>=2.2.3",
     "sentence-transformers>=4.0.1",
     "tqdm>=4.67.1",
@@ -32,4 +30,43 @@ disallow_any_unimported = true
 [tool.ruff]
 extend-exclude = ["datasets"]
 line-length = 120
-lint.extend-select = ["I"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+extend-select = ["I"]
+ignore = [
+    "B027",
+    "BLE001",
+    "C901",
+    "COM812",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D107",
+    "D200",
+    "D202",
+    "D203",
+    "D205",
+    "D212",
+    "D400",
+    "D415",
+    "EM101",
+    "EM102",
+    "ERA001",
+    "PGH003",
+    "PLC0414",
+    "PLR0912",
+    "PLR2004",
+    "S101",
+    "S110",
+    "S301",
+    "S311",
+    "T201",
+    "TID252",
+    "TRY003",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

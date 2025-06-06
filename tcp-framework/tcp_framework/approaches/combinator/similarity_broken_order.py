@@ -1,4 +1,5 @@
-from typing import Callable, Sequence, override
+from collections.abc import Callable, Sequence
+from typing import override
 
 from ...datatypes import RunContext, TestCase, TestInfo
 from ..approach import Approach
@@ -6,7 +7,7 @@ from ..representation import GroupAgg, lccss
 from ..representation.utils import normalize_code
 
 
-class SimilarityBreakedOrder(Approach):
+class SimilarityBrokenOrder(Approach):
     """
     Proposed.
     """
@@ -30,7 +31,7 @@ class SimilarityBreakedOrder(Approach):
 
         for cluster in clusters:
 
-            def select(target: TestCase) -> None:
+            def select(target: TestCase, cluster: list[TestCase] = cluster) -> None:
                 cluster.remove(target)
                 prioritized.add(target)
                 ctx.execute(target)

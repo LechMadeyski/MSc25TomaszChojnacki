@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 import tree_sitter_java
 from tree_sitter import Language, Node, Parser

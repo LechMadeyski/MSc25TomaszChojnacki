@@ -41,10 +41,9 @@ class SchulzeMixedOrder(MixedOrder):
             delta = p[(tc2, tc1)] - p[(tc1, tc2)]
             if delta > EPSILON:
                 return 1
-            elif delta < -EPSILON:
+            if delta < -EPSILON:
                 return -1
-            else:
-                return 0
+            return 0
 
         tcs = sorted(unique_cases, key=cmp_to_key(cmp))
         result: Ordering = []

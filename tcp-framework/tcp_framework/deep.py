@@ -1,4 +1,5 @@
-from typing import Any, Callable, Sequence
+from collections.abc import Callable, Sequence
+from typing import Any
 
 
 def flatten[T](xss: Sequence[Sequence[T]]) -> list[T]:

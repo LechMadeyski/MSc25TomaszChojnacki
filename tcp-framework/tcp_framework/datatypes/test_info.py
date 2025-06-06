@@ -3,7 +3,7 @@ from .test_result import TestResult
 
 
 class TestInfo:
-    def __init__(self, *, case: TestCase, content: str, result: TestResult):
+    def __init__(self, *, case: TestCase, content: str, result: TestResult) -> None:
         self.case = case
         self.content = content
         self.result = result
